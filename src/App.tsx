@@ -2,25 +2,22 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Login } from './components/Login';
 import { Register } from './components/Register';
+import { AdminProfileEdit } from './components/AdminProfileEdit';
 import { Toaster, toast } from 'sonner';
 
-// Types étendus pour gérer les rôles, (Admin et Responsable de département) et les états de profil
-export type Page = 'transition' | 'login' | 'register' | 'admin_profile' | 'planing';
+// Types étendus pour gérer les rôles et les états de profil
+export type Page = 'transition' | 'login' | 'register' | 'admin_profile_edit' | 'dashboard' | 'planing';
 
 export interface User {
   email: string;
   role: 'ADMIN' | 'RESPONSABLE';
   isProfileComplete: boolean;
+  firstName?: string;
+  lastName?: string;
+  phone?: string;
 }
 
 export default function App() {
-  const handleRegister = (data: any) => {
-    console.log("Données d'inscription reçues:", data);
-    // Ici, nous appellerons l'API pour créer le compte et la liaison Membership
-    toast.success("Compte créé avec succès ! Veuillez vous connecter.");
-    setCurrentPage('login');
-  };
-  
   const [currentPage, setCurrentPage] = useState<Page>('transition');
   const [user, setUser] = useState<User | null>(null);
 
@@ -31,6 +28,21 @@ export default function App() {
     }, 5000);
     return () => clearTimeout(timer);
   }, []);
+
+  const handleRegister = (data: any) => {
+    console.log("Données d'inscription reçues:", data);
+    // Simulation : création du compte responsable
+    const newUser: User = {
+      email: data.email,
+      role: 'RESPONSABLE',
+      isProfileComplete: true,
+      firstName: data.firstName,
+      lastName: data.lastName
+    };
+    setUser(newUser);
+    toast.success("Compte créé avec succès !");
+    setCurrentPage('planing');
+  };
 
   const handleLogin = (email: string, password: string) => {
     // Logique de simulation basée sur les règles métier
@@ -44,9 +56,9 @@ export default function App() {
       };
       setUser(adminUser);
       toast.success("Connexion Admin réussie");
-      setCurrentPage('admin_profile');
+      setCurrentPage('admin_profile_edit');
     } else {
-      // Simulation pour un responsable (à lier à l'API plus tard)
+      // Simulation pour un responsable
       const respUser: User = { 
         email, 
         role: 'RESPONSABLE', 
@@ -56,6 +68,18 @@ export default function App() {
       toast.success("Bienvenue Responsable de département");
       setCurrentPage('planing');
     }
+  };
+
+  const handleAdminProfileComplete = (profileData: any) => {
+    // Mettre à jour les informations de l'admin
+    const updatedUser: User = {
+      ...user!,
+      ...profileData,
+      isProfileComplete: true
+    };
+    setUser(updatedUser);
+    toast.success("Profil complété avec succès !");
+    setCurrentPage('dashboard');
   };
 
   return (
@@ -95,31 +119,24 @@ export default function App() {
                 </div>
               )}
 
-              // Modifiez les pages admin_profile :
-
-              {currentPage === 'admin_profile' && user && (
+              {currentPage === 'admin_profile_edit' && (
                 <div className="min-h-screen flex items-center justify-center p-6">
-                  <div className="p-12 text-center max-w-4xl mx-auto">
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                      Bienvenue, {user.email}
-                    </h1>
-                    <p className="mt-4 text-xl text-white/60">
-                      Rôle: {user.role} • {user.isProfileComplete ? 'Profil complet' : 'Veuillez compléter votre profil'}
-                    </p>
-                  </div>
+                  <AdminProfileEdit 
+                    onComplete={handleAdminProfileComplete}
+                    userEmail={user?.email || ''}
+                  />
                 </div>
               )}
 
-              {currentPage === 'planing' && user && (
+              {currentPage === 'dashboard' && (
                 <div className="min-h-screen flex items-center justify-center p-6">
-                  <div className="p-12 text-center max-w-6xl mx-auto">
-                    <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-                      Planning des réservations
-                    </h1>
-                    <p className="mt-4 text-xl text-white/60">
-                      Bienvenue {user.email} • Gérez et visualisez toutes vos réservations
-                    </p>
-                  </div>
+                  <AdminDashboard user={user} />
+                </div>
+              )}
+
+              {currentPage === 'planing' && (
+                <div className="min-h-screen flex items-center justify-center p-6">
+                  <PlaningDashboard user={user} />
                 </div>
               )}
             </motion.div>
@@ -238,5 +255,141 @@ function TransitionScreen() {
         Version Professionnelle 2.0 • © 2025 La Compassion
       </motion.p>
     </motion.div>
+  );
+}
+
+// Composant Dashboard pour l'Admin (placeholder pour l'instant)
+function AdminDashboard({ user }: { user: User | null }) {
+  return (
+    <div className="w-full max-w-6xl">
+      <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl">
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              Tableau de bord Administrateur
+            </h1>
+            <p className="mt-2 text-white/60">
+              Bienvenue, {user?.firstName} {user?.lastName}
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-white/50">{user?.email}</p>
+            <div className="inline-block px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm font-medium mt-1">
+              Administrateur Principal
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <div className="bg-gradient-to-br from-blue-500/10 to-blue-600/10 p-6 rounded-2xl border border-blue-500/20">
+            <h3 className="text-xl font-semibold text-white mb-2">Salles</h3>
+            <p className="text-3xl font-bold text-white">12</p>
+            <p className="text-sm text-white/60 mt-2">Locaux disponibles</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-purple-500/10 to-purple-600/10 p-6 rounded-2xl border border-purple-500/20">
+            <h3 className="text-xl font-semibold text-white mb-2">Départements</h3>
+            <p className="text-3xl font-bold text-white">15</p>
+            <p className="text-sm text-white/60 mt-2">Départements actifs</p>
+          </div>
+          
+          <div className="bg-gradient-to-br from-green-500/10 to-green-600/10 p-6 rounded-2xl border border-green-500/20">
+            <h3 className="text-xl font-semibold text-white mb-2">Réservations</h3>
+            <p className="text-3xl font-bold text-white">47</p>
+            <p className="text-sm text-white/60 mt-2">Cette semaine</p>
+          </div>
+        </div>
+        
+        <div className="mt-10 text-center">
+          <p className="text-white/50">
+            Interface de gestion des réservations en cours de développement...
+          </p>
+          <button className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl font-semibold hover:opacity-90 transition-opacity">
+            Accéder à la gestion complète
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Composant Dashboard pour les Responsables (Planning)
+function PlaningDashboard({ user }: { user: User | null }) {
+  return (
+    <div className="w-full max-w-6xl">
+      <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl">
+        <div className="flex items-center justify-between mb-10">
+          <div>
+            <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+              Planning des Réservations
+            </h1>
+            <p className="mt-2 text-white/60">
+              Gestion des salles - La Compassion
+            </p>
+          </div>
+          <div className="text-right">
+            <p className="text-sm text-white/50">{user?.email}</p>
+            <div className="inline-block px-3 py-1 bg-green-500/20 text-green-300 rounded-full text-sm font-medium mt-1">
+              Responsable de Département
+            </div>
+          </div>
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-4">Réserver une salle</h3>
+            <p className="text-white/60 mb-6">
+              Sélectionnez une salle et une plage horaire pour votre événement
+            </p>
+            <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-xl font-semibold hover:opacity-90 transition-opacity">
+              Nouvelle réservation
+            </button>
+          </div>
+          
+          <div className="bg-white/5 p-6 rounded-2xl border border-white/10">
+            <h3 className="text-xl font-semibold text-white mb-4">Mes réservations</h3>
+            <div className="space-y-4">
+              <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <div>
+                  <p className="font-medium text-white">Salle de conférence principale</p>
+                  <p className="text-sm text-white/60">Aujourd'hui, 14h-16h</p>
+                </div>
+                <div className="px-3 py-1 bg-blue-500/20 text-blue-300 rounded-full text-sm">
+                  Confirmée
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-between p-4 bg-white/5 rounded-xl">
+                <div>
+                  <p className="font-medium text-white">Salle de réunion B</p>
+                  <p className="text-sm text-white/60">Demain, 10h-12h</p>
+                </div>
+                <div className="px-3 py-1 bg-yellow-500/20 text-yellow-300 rounded-full text-sm">
+                  En attente
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <div className="mt-10 p-6 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-2xl border border-white/10">
+          <h3 className="text-xl font-semibold text-white mb-3">Instructions</h3>
+          <ul className="space-y-2 text-white/70">
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              Les réservations doivent être faites au minimum 24h à l'avance
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              Chaque département peut réserver jusqu'à 2 salles simultanément
+            </li>
+            <li className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
+              L'administrateur valide toutes les réservations
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
   );
 }

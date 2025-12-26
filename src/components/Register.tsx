@@ -1,7 +1,8 @@
 import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
-import { Building2, Mail, Lock, User, ArrowLeft, Briefcase, Church } from 'lucide-react';
+import { Building2, Mail, Lock, User, ArrowLeft, Church } from 'lucide-react';
 import { toast } from 'sonner';
+import { DepartmentSelector } from './auth/DepartmentSelector';
 
 interface RegisterProps {
   onRegister: (formData: any) => void;
@@ -18,39 +19,40 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
     departmentId: '',
   });
 
-  // Liste fictive des départements (à remplacer par un appel API plus tard)
-  const departments = [
-    { id: '1', name: 'Genius hub' },
-    { id: '2', name: 'Protocole' },
-    { id: '3', name: 'Intercession' },
-    { id: '4', name: 'Sécurité' },
-    { id: '5', name: 'Jeunesse' },
-    { id: '6', name: 'Ecole des ouvriers' },
-    { id: '7', name: 'Ecole de bapteme' },
-    { id: '8', name: 'Affermissement' },
-    { id: '9', name: 'Ecole des adolescences' },
-    { id: '10', name: 'Suivi des ames' },
-    { id: '11', name: 'Salubrité' },
-    { id: '12', name: 'Evangelisation' },
-    { id: '13', name: 'Technique' },
-    { id: '14', name: 'Chorale 1' },
-    { id: '15', name: 'Chorale 2' },
-  ];
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
+    setIsSubmitting(true);
     
+    // Validation
     if (formData.password !== formData.confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas.");
+      setIsSubmitting(false);
       return;
     }
 
     if (!formData.departmentId) {
       toast.error("Veuillez sélectionner un département.");
+      setIsSubmitting(false);
       return;
     }
 
+    if (formData.password.length < 8) {
+      toast.error("Le mot de passe doit contenir au moins 8 caractères.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Simulation d'un délai de traitement
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
     onRegister(formData);
+    setIsSubmitting(false);
+  };
+
+  const handleDepartmentSelect = (departmentId: string) => {
+    setFormData({...formData, departmentId});
   };
 
   return (
@@ -73,7 +75,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
             <span className="font-medium">Retour à la connexion</span>
           </motion.button>
           
-          {/* Logo et titre centré */}
+          {/* Logo */}
           <div className="flex items-center gap-3">
             <Church className="w-8 h-8 text-blue-400" />
             <div>
@@ -82,12 +84,12 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
             </div>
           </div>
           
-          <div className="w-32"></div> {/* Pour équilibrer la flexbox */}
+          <div className="w-32"></div>
         </div>
 
         {/* Carte principale */}
         <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
-          {/* Header de la carte avec Building2 */}
+          {/* Header de la carte */}
           <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 p-8 border-b border-white/10">
             <div className="flex items-center justify-center gap-4 mb-4">
               <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20">
@@ -116,7 +118,10 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-white/80 ml-1">Prénom</label>
+                    <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
+                      <span>Prénom</span>
+                      <span className="text-red-400">*</span>
+                    </label>
                     <div className="relative group">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-blue-400 transition-colors" />
                       <input
@@ -131,7 +136,10 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   </div>
                   
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-white/80 ml-1">Nom</label>
+                    <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
+                      <span>Nom</span>
+                      <span className="text-red-400">*</span>
+                    </label>
                     <div className="relative group">
                       <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-blue-400 transition-colors" />
                       <input
@@ -147,37 +155,26 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                 </div>
               </div>
 
-              {/* Section Département */}
+              {/* Section Département avec DepartmentSelector */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3 mb-6">
                   <div className="p-2 rounded-lg bg-white/5">
-                    <Briefcase className="w-5 h-5 text-purple-400" />
+                    <Building2 className="w-5 h-5 text-purple-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-white">Département</h3>
                 </div>
                 
-                <div className="space-y-3">
-                  <label className="text-sm font-medium text-white/80 ml-1">Sélectionnez votre département</label>
-                  <div className="relative group">
-                    <Briefcase className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-purple-400 transition-colors" />
-                    <select
-                      required
-                      value={formData.departmentId}
-                      onChange={(e) => setFormData({...formData, departmentId: e.target.value})}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white appearance-none focus:ring-2 focus:ring-purple-400/50 focus:border-purple-400/30 outline-none transition-all hover:border-white/20 cursor-pointer"
-                    >
-                      <option value="" className="bg-[#1E293B] text-white/70">Sélectionnez votre département</option>
-                      {departments.map((dept) => (
-                        <option key={dept.id} value={dept.id} className="bg-[#1E293B] text-white">
-                          {dept.name}
-                        </option>
-                      ))}
-                    </select>
-                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none">
-                      ▼
-                    </div>
-                  </div>
-                </div>
+                <DepartmentSelector 
+                  value={formData.departmentId}
+                  onSelect={handleDepartmentSelect}
+                  label="Sélectionnez votre département"
+                  required={true}
+                  showIcon={true}
+                />
+                
+                <p className="text-sm text-white/50">
+                  Le département sélectionné déterminera les salles que vous pourrez réserver.
+                </p>
               </div>
 
               {/* Section Contact */}
@@ -190,7 +187,10 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                 </div>
                 
                 <div className="space-y-3">
-                  <label className="text-sm font-medium text-white/80 ml-1">Email professionnel</label>
+                  <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
+                    <span>Email professionnel</span>
+                    <span className="text-red-400">*</span>
+                  </label>
                   <div className="relative group">
                     <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-cyan-400 transition-colors" />
                     <input
@@ -199,7 +199,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                       value={formData.email}
                       onChange={(e) => setFormData({...formData, email: e.target.value})}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 outline-none transition-all hover:border-white/20"
-                      placeholder="votre.nom@eglise.com"
+                      placeholder="votre.nom@gmail.com"
                     />
                   </div>
                 </div>
@@ -216,7 +216,10 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                 
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-white/80 ml-1">Mot de passe</label>
+                    <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
+                      <span>Mot de passe</span>
+                      <span className="text-red-400">*</span>
+                    </label>
                     <div className="relative group">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-green-400 transition-colors" />
                       <input
@@ -225,13 +228,16 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                         value={formData.password}
                         onChange={(e) => setFormData({...formData, password: e.target.value})}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-green-400/50 focus:border-green-400/30 outline-none transition-all hover:border-white/20"
-                        placeholder="••••••••"
+                        placeholder="Minimum 8 caractères"
                       />
                     </div>
                   </div>
                   
                   <div className="space-y-3">
-                    <label className="text-sm font-medium text-white/80 ml-1">Confirmation</label>
+                    <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
+                      <span>Confirmation</span>
+                      <span className="text-red-400">*</span>
+                    </label>
                     <div className="relative group">
                       <Lock className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/40 group-focus-within:text-green-400 transition-colors" />
                       <input
@@ -240,10 +246,16 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                         value={formData.confirmPassword}
                         onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-green-400/50 focus:border-green-400/30 outline-none transition-all hover:border-white/20"
-                        placeholder="••••••••"
+                        placeholder="Retapez votre mot de passe"
                       />
                     </div>
                   </div>
+                </div>
+                
+                <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mt-4">
+                  <p className="text-sm text-white/70">
+                    <strong>Recommandations de sécurité :</strong> Utilisez un mot de passe fort contenant au moins 8 caractères, avec des majuscules, des minuscules, des chiffres et des caractères spéciaux.
+                  </p>
                 </div>
               </div>
 
@@ -252,12 +264,20 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 type="submit"
-                className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 mt-8 group"
+                disabled={isSubmitting}
+                className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 mt-8 group disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <span className="flex items-center justify-center gap-3">
-                  <Building2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                  Créer mon compte responsable
-                </span>
+                {isSubmitting ? (
+                  <span className="flex items-center justify-center gap-3">
+                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                    Création du compte...
+                  </span>
+                ) : (
+                  <span className="flex items-center justify-center gap-3">
+                    <Building2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                    Créer mon compte responsable
+                  </span>
+                )}
               </motion.button>
             </form>
 
@@ -268,8 +288,16 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   <Lock className="w-4 h-4" />
                 </div>
                 <p>
-                  Vos données sont sécurisées et utilisées uniquement pour la gestion des réservations de votre département.
-                  Un administrateur devra valider votre compte avant la première connexion.
+                  Votre compte sera créé en tant que "Responsable de département". Un administrateur devra valider votre compte avant que vous puissiez effectuer des réservations. Vous recevrez une notification par email une fois votre compte validé.
+                </p>
+              </div>
+              
+              <div className="flex items-start gap-3 text-sm text-white/50 mt-4">
+                <div className="p-1 rounded bg-white/5 mt-0.5">
+                  <Building2 className="w-4 h-4" />
+                </div>
+                <p>
+                  En tant que responsable, vous pourrez réserver des salles pour les activités de votre département, consulter le planning des réservations et gérer vos réservations en cours.
                 </p>
               </div>
             </div>

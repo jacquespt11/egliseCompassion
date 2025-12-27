@@ -6,7 +6,7 @@ import { AdminProfileEdit } from './components/AdminProfileEdit';
 import { Toaster, toast } from 'sonner';
 
 // Types étendus pour gérer les rôles et les états de profil
-export type Page = 'transition' | 'login' | 'register' | 'admin_profile_edit' | 'dashboard' | 'planing';
+export type Page = 'transition' | 'login' | 'register' | 'admin_profile_edit' | 'dashboard' | 'planing' | 'room_gallery';
 
 export interface User {
   email: string;
@@ -130,13 +130,25 @@ export default function App() {
 
               {currentPage === 'dashboard' && (
                 <div className="min-h-screen flex items-center justify-center p-6">
-                  <AdminDashboard user={user} />
+                  <AdminDashboard 
+                    user={user} 
+                    onNavigateToRooms={() => setCurrentPage('room_gallery')}
+                  />
                 </div>
               )}
 
               {currentPage === 'planing' && (
                 <div className="min-h-screen flex items-center justify-center p-6">
-                  <PlaningDashboard user={user} />
+                  <PlaningDashboard 
+                    user={user} 
+                    onNavigateToRooms={() => setCurrentPage('room_gallery')}
+                  />
+                </div>
+              )}
+
+              {currentPage === 'room_gallery' && (
+                <div className="min-h-screen flex items-center justify-center p-6">
+                  <RoomGalleryPage />
                 </div>
               )}
             </motion.div>
@@ -258,8 +270,8 @@ function TransitionScreen() {
   );
 }
 
-// Composant Dashboard pour l'Admin (placeholder pour l'instant)
-function AdminDashboard({ user }: { user: User | null }) {
+// Composant Dashboard pour l'Admin
+function AdminDashboard({ user, onNavigateToRooms }: { user: User | null, onNavigateToRooms?: () => void }) {
   return (
     <div className="w-full max-w-6xl">
       <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl">
@@ -301,11 +313,11 @@ function AdminDashboard({ user }: { user: User | null }) {
         </div>
         
         <div className="mt-10 text-center">
-          <p className="text-white/50">
-            Interface de gestion des réservations en cours de développement...
-          </p>
-          <button className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl font-semibold hover:opacity-90 transition-opacity">
-            Accéder à la gestion complète
+          <button 
+            onClick={onNavigateToRooms}
+            className="mt-6 px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+          >
+            Gérer les salles
           </button>
         </div>
       </div>
@@ -314,7 +326,7 @@ function AdminDashboard({ user }: { user: User | null }) {
 }
 
 // Composant Dashboard pour les Responsables (Planning)
-function PlaningDashboard({ user }: { user: User | null }) {
+function PlaningDashboard({ user, onNavigateToRooms }: { user: User | null, onNavigateToRooms?: () => void }) {
   return (
     <div className="w-full max-w-6xl">
       <div className="bg-white/5 backdrop-blur-xl rounded-3xl p-8 border border-white/10 shadow-2xl">
@@ -341,8 +353,11 @@ function PlaningDashboard({ user }: { user: User | null }) {
             <p className="text-white/60 mb-6">
               Sélectionnez une salle et une plage horaire pour votre événement
             </p>
-            <button className="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-xl font-semibold hover:opacity-90 transition-opacity">
-              Nouvelle réservation
+            <button 
+              onClick={onNavigateToRooms}
+              className="w-full py-3 bg-gradient-to-r from-blue-500 to-green-500 rounded-xl font-semibold hover:opacity-90 transition-opacity"
+            >
+              Voir les salles disponibles
             </button>
           </div>
           
@@ -390,6 +405,40 @@ function PlaningDashboard({ user }: { user: User | null }) {
           </ul>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Page de galerie des salles
+import { useRooms } from './hooks/useRooms';
+import { RoomGallery } from './components/rooms/RoomGallery';
+
+function RoomGalleryPage() {
+  const { rooms, loading, createRoom } = useRooms();
+  
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white/60">Chargement des salles...</p>
+        </div>
+      </div>
+    );
+  }
+
+  const handleRoomCreate = (roomData: any) => {
+    console.log('Créer salle:', roomData);
+    createRoom(roomData);
+  };
+
+  return (
+    <div className="min-h-screen w-full">
+      <RoomGallery 
+        rooms={rooms} 
+        userRole="ADMIN" 
+        onRoomCreate={handleRoomCreate}
+      />
     </div>
   );
 }

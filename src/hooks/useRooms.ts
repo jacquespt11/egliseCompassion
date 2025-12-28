@@ -1,97 +1,162 @@
-// hooks/useRooms.ts
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import type { Room } from '../types/room';
 
-const MOCK_ROOMS: Room[] = [
-  {
-    id: '1',
-    name: 'Salle de Conférence Principale',
-    description: 'Une grande salle équipée pour les conférences et réunions importantes',
-    capacity: 50,
-    location: 'Bâtiment A, RDC',
-    equipment: ['wifi', 'projector', 'sound_system', 'microphone', 'camera'],
-    status: 'ACTIVE',
-    imageUrl: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&auto=format&fit=crop',
-    createdAt: '2024-01-15T10:30:00Z',
-    updatedAt: '2024-01-15T10:30:00Z',
-  },
-  {
-    id: '2',
-    name: 'Salle de Réunion B',
-    description: 'Salle de réunion intime pour les petites équipes',
-    capacity: 10,
-    location: 'Bâtiment B, 1er étage',
-    equipment: ['wifi', 'whiteboard', 'screen', 'coffee_machine'],
-    status: 'ACTIVE',
-    imageUrl: 'https://images.unsplash.com/photo-1513475382585-d06e58bcb0e0?w=800&auto=format&fit=crop',
-    createdAt: '2024-01-16T14:20:00Z',
-    updatedAt: '2024-01-16T14:20:00Z',
-  },
-  {
-    id: '3',
-    name: 'Salle Polyvalente',
-    description: 'Espace modulable pour divers événements et formations',
-    capacity: 100,
-    location: 'Bâtiment C, Hall principal',
-    equipment: ['wifi', 'projector', 'sound_system', 'air_conditioning'],
-    status: 'MAINTENANCE',
-    imageUrl: 'https://images.unsplash.com/photo-1524178234883-043d5c3f3cf4?w=800&auto=format&fit=crop',
-    createdAt: '2024-01-10T09:15:00Z',
-    updatedAt: '2024-02-01T16:45:00Z',
-  },
-];
-
-export const useRooms = () => {
-  const [rooms, setRooms] = useState<Room[]>(MOCK_ROOMS);
+export function useRooms() {
+  const [rooms, setRooms] = useState<Room[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const fetchRooms = useCallback(async () => {
     setLoading(true);
-    setTimeout(() => {
-      setRooms(MOCK_ROOMS);
+    setError(null);
+    
+    try {
+      // Simuler une requête API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      // Données mock
+      const mockRooms: Room[] = [
+        {
+          id: '1',
+          name: 'Salle de conférence principale',
+          description: 'Grande salle équipée pour les conférences et réunions importantes',
+          capacity: 50,
+          status: 'ACTIVE',
+          equipment: ['projector', 'screen', 'sound_system', 'microphone', 'wifi'],
+          images: [],
+          departmentId: 'general',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-10'),
+        },
+        {
+          id: '2',
+          name: 'Salle de réunion A',
+          description: 'Salle de réunion standard pour les équipes de 10 personnes',
+          capacity: 10,
+          status: 'ACTIVE',
+          equipment: ['whiteboard', 'wifi', 'coffee_machine'],
+          images: [],
+          departmentId: 'general',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-10'),
+        },
+        {
+          id: '3',
+          name: 'Salle de formation',
+          description: 'Salle équipée pour les formations avec tables individuelles',
+          capacity: 25,
+          status: 'ACTIVE',
+          equipment: ['projector', 'whiteboard', 'wifi', 'printer'],
+          images: [],
+          departmentId: 'training',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-10'),
+        },
+        {
+          id: '4',
+          name: 'Auditorium',
+          description: 'Grand auditorium pour les événements et présentations',
+          capacity: 200,
+          status: 'ACTIVE',
+          equipment: ['projector', 'screen', 'sound_system', 'microphone', 'camera', 'wifi'],
+          images: [],
+          departmentId: 'events',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-10'),
+        },
+        {
+          id: '5',
+          name: 'Salle de réunion B',
+          description: 'Petite salle de réunion pour les discussions privées',
+          capacity: 6,
+          status: 'MAINTENANCE',
+          equipment: ['whiteboard', 'wifi'],
+          images: [],
+          departmentId: 'general',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-12'),
+        },
+        {
+          id: '6',
+          name: 'Salle créative',
+          description: 'Salle avec espace collaboratif et équipements créatifs',
+          capacity: 15,
+          status: 'ACTIVE',
+          equipment: ['whiteboard', 'wifi', 'printer', 'coffee_machine'],
+          images: [],
+          departmentId: 'creative',
+          createdAt: new Date('2024-01-01'),
+          updatedAt: new Date('2024-01-10'),
+        },
+      ];
+      
+      setRooms(mockRooms);
+      return mockRooms;
+    } catch (err) {
+      setError('Erreur lors de la récupération des salles');
+      throw err;
+    } finally {
       setLoading(false);
-    }, 500);
+    }
   }, []);
 
-  const createRoom = async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt'>) => {
-    const newRoom: Room = {
-      ...roomData,
-      id: Math.random().toString(36).substr(2, 9),
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+  const createRoom = useCallback(async (roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt'>) => {
+    setLoading(true);
+    setError(null);
     
-    setRooms(prev => [...prev, newRoom]);
-    return newRoom;
-  };
+    try {
+      // Simuler une requête API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      const newRoom: Room = {
+        ...roomData,
+        id: Math.random().toString(36).substr(2, 9),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+      };
+      
+      setRooms(prev => [newRoom, ...prev]);
+      return newRoom;
+    } catch (err) {
+      setError('Erreur lors de la création de la salle');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const updateRoom = async (id: string, updates: Partial<Room>) => {
-    setRooms(prev => prev.map(room => 
-      room.id === id 
-        ? { ...room, ...updates, updatedAt: new Date().toISOString() }
-        : room
-    ));
-  };
+  const updateRoom = useCallback(async (id: string, updates: Partial<Room>) => {
+    setLoading(true);
+    setError(null);
+    
+    try {
+      // Simuler une requête API
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      setRooms(prev => prev.map(room => 
+        room.id === id 
+          ? { ...room, ...updates, updatedAt: new Date() }
+          : room
+      ));
+    } catch (err) {
+      setError('Erreur lors de la mise à jour de la salle');
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
-  const updateRoomStatus = async (id: string, status: Room['status']) => {
-    await updateRoom(id, { status });
-  };
+  // Initial fetch
+  useState(() => {
+    fetchRooms();
+  });
 
   return {
     rooms,
     loading,
     error,
+    fetchRooms,
     createRoom,
     updateRoom,
-    updateRoomStatus,
-    refetch: () => {
-      // Pour l'intégration future avec API
-      setLoading(true);
-      setTimeout(() => {
-        setRooms(MOCK_ROOMS);
-        setLoading(false);
-      }, 500);
-    },
   };
-};
+}

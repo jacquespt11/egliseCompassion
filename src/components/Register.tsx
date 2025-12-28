@@ -65,15 +65,16 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
       >
         {/* Header avec retour */}
         <div className="flex items-center justify-between mb-8">
-          <motion.button 
+          <button 
             onClick={onBackToLogin}
-            className="flex items-center gap-3 text-white/70 hover:text-white transition-all duration-300 group px-4 py-2 rounded-lg hover:bg-white/5"
-            whileHover={{ x: -5 }}
-            whileTap={{ scale: 0.95 }}
+            className="flex items-center gap-3 text-white/70 hover:text-white transition-all duration-300 group px-4 py-2 rounded-lg hover:bg-white/5 relative overflow-hidden"
           >
-            <ArrowLeft className="w-5 h-5 group-hover:-translate-x-1 transition-transform" />
-            <span className="font-medium">Retour à la connexion</span>
-          </motion.button>
+            {/* Animation de fond au survol */}
+            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></span>
+            
+            <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1 relative z-10" />
+            <span className="font-medium relative z-10">Retour à la connexion</span>
+          </button>
           
           {/* Logo */}
           <div className="flex items-center gap-3">
@@ -259,26 +260,29 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                 </div>
               </div>
 
-              {/* Bouton de soumission */}
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              {/* Bouton de soumission - CORRIGÉ */}
+              <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 mt-8 group disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-gradient-to-r from-blue-500 via-purple-500 to-blue-500 text-white py-4 rounded-xl font-bold text-lg shadow-lg shadow-blue-500/20 hover:shadow-blue-500/40 transition-all duration-300 mt-8 group disabled:opacity-50 disabled:cursor-not-allowed relative overflow-hidden"
               >
-                {isSubmitting ? (
-                  <span className="flex items-center justify-center gap-3">
-                    <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Création du compte...
-                  </span>
-                ) : (
-                  <span className="flex items-center justify-center gap-3">
-                    <Building2 className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                    Créer mon compte responsable
-                  </span>
-                )}
-              </motion.button>
+                {/* Animation d'ondulation au survol */}
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
+                
+                <span className="flex items-center justify-center gap-3 relative z-10">
+                  {isSubmitting ? (
+                    <>
+                      <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      <span>Création du compte...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Building2 className="w-6 h-6 transition-transform group-hover:scale-110" />
+                      <span>Créer mon compte responsable</span>
+                    </>
+                  )}
+                </span>
+              </button>
             </form>
 
             {/* Note informative */}

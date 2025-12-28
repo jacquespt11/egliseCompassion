@@ -1,121 +1,149 @@
-// components/rooms/RoomCard.tsx
+import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Users, MapPin, Wifi, Tv, Coffee, Shield, ShieldOff } from 'lucide-react';
-import type { Room } from '../../types/room';
+import { Building2, Users, MapPin, Calendar, Eye, BookOpen, Star } from 'lucide-react';
 import { StatusBadge } from '../shared/StatusBadge';
+import type { Room } from '../../types/room';
 
 interface RoomCardProps {
   room: Room;
-  onBook?: (room: Room) => void;
-  onEdit?: (room: Room) => void;
-  onToggleStatus?: (room: Room) => void;
-  variant?: 'user' | 'admin';
+  onViewDetails?: () => void;
+  onReserve?: () => void;
 }
 
-export function RoomCard({ 
-  room, 
-  onBook, 
-  onEdit, 
-  onToggleStatus, 
-  variant = 'user' 
-}: RoomCardProps) {
-  const getEquipmentIcon = (equipment: string) => {
-    const icons: Record<string, React.ReactElement> = {
-      wifi: <Wifi className="w-4 h-4" />,
-      projector: <Tv className="w-4 h-4" />,
-      coffee: <Coffee className="w-4 h-4" />,
-      whiteboard: <div className="w-4 h-4 border border-white rounded" />,
-    };
-    return icons[equipment] || <div className="w-4 h-4 bg-gray-500 rounded" />;
+export function RoomCard({ room, onViewDetails, onReserve }: RoomCardProps) {
+  const [isHovered, setIsHovered] = useState(false);
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'Disponible';
+      case 'INACTIVE':
+        return 'Indisponible';
+      case 'MAINTENANCE':
+        return 'Maintenance';
+      default:
+        return 'Inconnu';
+    }
+  };
+
+  const getStatusType = (status: string) => {
+    switch (status) {
+      case 'ACTIVE':
+        return 'success';
+      case 'INACTIVE':
+        return 'error';
+      case 'MAINTENANCE':
+        return 'warning';
+      default:
+        return 'info';
+    }
   };
 
   return (
     <motion.div
-      whileHover={{ y: -4 }}
-      className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-lg rounded-2xl border border-white/10 overflow-hidden shadow-xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      whileHover={{ y: -5 }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      className="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden hover:border-white/20 transition-all"
     >
-      {/* Header avec image */}
+      {/* Image de la salle */}
       <div className="relative h-48 overflow-hidden">
-        <img
-          src={room.imageUrl || '/room-placeholder.jpg'}
-          alt={room.name}
-          className="w-full h-full object-cover transition-transform hover:scale-105 duration-300"
-        />
-        <div className="absolute top-3 right-3">
-          <StatusBadge status={room.status} />
-        </div>
-        {variant === 'admin' && onToggleStatus && (
-          <button
-            onClick={() => onToggleStatus(room)}
-            className="absolute top-3 left-3 p-2 bg-black/50 backdrop-blur-sm rounded-lg hover:bg-black/70 transition-colors"
-          >
-            {room.status === 'ACTIVE' ? (
-              <ShieldOff className="w-5 h-5 text-red-300" />
-            ) : (
-              <Shield className="w-5 h-5 text-green-300" />
-            )}
-          </button>
+        <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
+        {room.imageUrl ? (
+          <img
+            src={room.imageUrl}
+            alt={room.name}
+            className="w-full h-full object-cover"
+          />
+        ) : (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <Building2 className="w-20 h-20 text-white/30" />
+          </div>
         )}
+        
+        {/* Badge de statut */}
+        <div className="absolute top-4 right-4">
+          <StatusBadge 
+            status={getStatusType(room.status)} 
+            label={getStatusLabel(room.status)} 
+            size="sm" 
+          />
+        </div>
       </div>
 
       {/* Contenu */}
-      <div className="p-5">
-        <div className="flex justify-between items-start mb-3">
-          <h3 className="text-xl font-bold text-white">{room.name}</h3>
-          <div className="flex items-center text-amber-300">
-            <Users className="w-4 h-4 mr-1" />
-            <span className="font-semibold">{room.capacity}</span>
+      <div className="p-6">
+        <div className="mb-4">
+          <h3 className="text-xl font-bold text-white mb-2">{room.name}</h3>
+          <p className="text-white/60 text-sm line-clamp-2">{room.description}</p>
+        </div>
+
+        {/* Caractéristiques */}
+        <div className="space-y-3 mb-6">
+          <div className="flex items-center gap-2">
+            <Users className="w-4 h-4 text-white/40" />
+            <span className="text-white/70 text-sm">Capacité : {room.capacity} personnes</span>
+          </div>
+          
+          {room.location && (
+            <div className="flex items-center gap-2">
+              <MapPin className="w-4 h-4 text-white/40" />
+              <span className="text-white/70 text-sm">{room.location}</span>
+            </div>
+          )}
+          
+          {/* Note/évaluation */}
+          <div className="flex items-center gap-2">
+            <Star className="w-4 h-4 text-amber-400" />
+            <span className="text-white/70 text-sm">4.8/5 (24 avis)</span>
           </div>
         </div>
 
-        <p className="text-white/70 text-sm mb-4 line-clamp-2">{room.description}</p>
-
-        {/* Localisation */}
-        <div className="flex items-center text-white/60 mb-4">
-          <MapPin className="w-4 h-4 mr-2" />
-          <span className="text-sm">{room.location}</span>
-        </div>
-
         {/* Équipements */}
-        <div className="flex flex-wrap gap-2 mb-5">
-          {room.equipment.slice(0, 3).map((eq, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-1 px-2 py-1 bg-white/10 rounded-lg"
-              title={eq}
-            >
-              {getEquipmentIcon(eq)}
-              <span className="text-xs text-white/80">{eq}</span>
+        {room.equipment.length > 0 && (
+          <div className="mb-6">
+            <h4 className="text-sm font-medium text-white/60 mb-2">Équipements</h4>
+            <div className="flex flex-wrap gap-2">
+              {room.equipment.slice(0, 3).map((equip, index) => (
+                <span
+                  key={index}
+                  className="px-2 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-white/70"
+                >
+                  {equip}
+                </span>
+              ))}
+              {room.equipment.length > 3 && (
+                <span className="px-2 py-1 text-xs text-white/40">
+                  +{room.equipment.length - 3} autres
+                </span>
+              )}
             </div>
-          ))}
-          {room.equipment.length > 3 && (
-            <div className="px-2 py-1 bg-white/10 rounded-lg text-xs text-white/60">
-              +{room.equipment.length - 3}
-            </div>
-          )}
-        </div>
+          </div>
+        )}
 
         {/* Actions */}
-        <div className="flex gap-2">
-          {variant === 'admin' && onEdit && (
+        <div className="flex gap-3">
+          {onViewDetails && (
             <button
-              onClick={() => onEdit(room)}
-              className="flex-1 px-4 py-2 bg-blue-500/20 text-blue-300 rounded-lg hover:bg-blue-500/30 transition-colors"
+              onClick={onViewDetails}
+              className="flex-1 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg font-medium transition-all flex items-center justify-center gap-2"
             >
-              Modifier
+              <Eye className="w-4 h-4" />
+              <span>Détails</span>
             </button>
           )}
-          <button
-            onClick={() => onBook?.(room)}
-            disabled={room.status !== 'ACTIVE'}
-            className={`flex-1 px-4 py-2 rounded-lg font-medium transition-all ${
-              room.status === 'ACTIVE'
-                ? 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
-                : 'bg-gray-700/50 text-gray-400 cursor-not-allowed'
-            }`}
-          >
-            {room.status === 'ACTIVE' ? 'Réserver' : 'Indisponible'}
-          </button>
+          
+          {onReserve && room.status === 'ACTIVE' && (
+            <button
+              onClick={onReserve}
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg font-medium hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
+            >
+              <BookOpen className="w-4 h-4" />
+              <span>Réserver</span>
+            </button>
+          )}
         </div>
       </div>
     </motion.div>

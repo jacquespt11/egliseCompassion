@@ -215,7 +215,7 @@ export default function App() {
 function TransitionScreen() {
   return (
     <motion.div 
-      className="flex flex-col items-center justify-center text-center from-[#0F172A] to-[#1E293B] space-y-16 max-w-5xl mx-auto"
+      className="flex min-h-screen flex-col items-center justify-center text-center space-y-16 max-w-5xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}

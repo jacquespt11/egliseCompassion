@@ -4,14 +4,15 @@ import { Search, Filter, Calendar, Clock } from 'lucide-react';
 import { useReservations } from '../../hooks/useReservations';
 import { ReservationCard } from './ReservationCard';
 import type { UserRole } from '../../types/user';
+import type { Reservation } from '../../types/reservation';
 
 interface ReservationListProps {
   userId?: string;
   departmentId?: string;
   userRole?: UserRole;
-  onViewDetails: (reservation: any) => void;
-  onCancelReservation: (reservation: any) => void;
-  onEditReservation: (reservation: any) => void;
+  onViewDetails: (reservation: Reservation) => void;
+  onCancelReservation: (reservation: Reservation) => void;
+  onEditReservation: (reservation: Reservation) => void;
 }
 
 export function ReservationList({
@@ -35,9 +36,11 @@ export function ReservationList({
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
       const matchesSearch = 
-        reservation.title.toLowerCase().includes(searchLower) ||
-        (reservation.description?.toLowerCase() || '').includes(searchLower) ||
-        (reservation.roomName?.toLowerCase() || '').includes(searchLower);
+        (reservation.title || '').toLowerCase().includes(searchLower) ||
+        (reservation.description || '').toLowerCase().includes(searchLower) ||
+        reservation.roomName.toLowerCase().includes(searchLower) ||
+        (reservation.userName || '').toLowerCase().includes(searchLower) ||
+        reservation.department.toLowerCase().includes(searchLower);
       
       if (!matchesSearch) return false;
     }

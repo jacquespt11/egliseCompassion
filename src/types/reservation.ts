@@ -1,4 +1,30 @@
-export type ReservationStatus = 'EN_ATTENTE' | 'APPROUVEE' | 'REFUSEE' | 'ANNULEE';
+export type ReservationStatus = 'EN_ATTENTE' | 'APPROUVEE' | 'REFUSEE' | 'ANNULEE'; // Adapter au français
+
+export type Reservation = {
+  id: string;
+  userId: string;
+  userName: string;
+  userEmail: string;
+  department: string;
+  roomId: string;
+  roomName: string;
+  date: string;
+  startTime: string;
+  endTime: string;
+  title?: string; // Ajouter
+  description?: string; // Ajouter
+  participants?: number; // Ajouter
+  equipmentRequested?: string[]; // Ajouter
+  comments?: string; // Ajouter
+  status: ReservationStatus;
+  reason?: string;
+  createdAt: string;
+  updatedAt: string;
+  rejectionReason?: string;
+  departmentName?: string; // Ajouter
+  startDate?: string; // Ajouter si besoin
+  endDate?: string; // Ajouter si besoin
+};
 
 export interface TimeSlot {
   start: Date;
@@ -6,40 +32,20 @@ export interface TimeSlot {
   isAvailable: boolean;
 }
 
-export interface CreateReservationDto {
+export type CreateReservationDto = {
   roomId: string;
   title: string;
   description?: string;
-  startDate: Date;
-  endDate: Date;
-  participants?: number;
+  date: string; // Format: YYYY-MM-DD
+  startTime: string; // Format: HH:MM
+  endTime: string; // Format: HH:MM
+  participants: number;
   equipmentRequested?: string[];
-  departmentId: string;
-}
-
-export interface Reservation {
-  id: string;
-  roomId: string;
-  userId: string;
-  departmentId: string;
-  title: string;
-  description?: string;
-  startDate: Date;
-  endDate: Date;
-  status: ReservationStatus;
-  participants?: number;
-  equipmentRequested?: string[];
-  createdAt: Date;
-  updatedAt: Date;
-  
-  // Propriétés étendues pour l'affichage (optionnelles)
-  roomName?: string;
-  activity?: string;
-  rejectionReason?: string;
-  participantsCount?: number;
-  departmentName?: string;
+  departmentId?: string;
+  department?: string;
+  userId?: string;
   userName?: string;
+  userEmail?: string;
+  roomName?: string;
   comments?: string;
-  approvedAt?: Date;
-  approvedBy?: string;
-}
+};

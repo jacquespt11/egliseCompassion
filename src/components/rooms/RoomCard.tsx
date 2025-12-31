@@ -12,6 +12,10 @@ interface RoomCardProps {
 
 export function RoomCard({ room, onViewDetails, onReserve }: RoomCardProps) {
   const [isHovered, setIsHovered] = useState(false);
+  
+  // Créer des variables avec des valeurs par défaut pour les propriétés optionnelles
+  const roomEquipment = room.equipment || [];
+  const roomImage = room.imageUrl || (room.images && room.images[0]);
 
   const getStatusLabel = (status: string) => {
     switch (status) {
@@ -51,11 +55,15 @@ export function RoomCard({ room, onViewDetails, onReserve }: RoomCardProps) {
       {/* Image de la salle */}
       <div className="relative h-48 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20" />
-        {room.imageUrl ? (
+        {roomImage ? (
           <img
-            src={room.imageUrl}
+            src={roomImage}
             alt={room.name}
             className="w-full h-full object-cover"
+            onError={(e) => {
+              // En cas d'erreur de chargement de l'image
+              (e.target as HTMLImageElement).src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMzAwIiBoZWlnaHQ9IjMwMCIgZmlsbD0iIzFmMjkzZCIvPjx0ZXh0IHg9IjUwJSIgeT0iNTAlIiBmb250LWZhbWlseT0iQXJpYWwiIGZvbnQtc2l6ZT0iMjQiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGR5PSIuM2VtIiBmaWxsPSJ3aGl0ZSI+R2JhdGltZW50PC90ZXh0Pjwvc3ZnPg==';
+            }}
           />
         ) : (
           <div className="absolute inset-0 flex items-center justify-center">
@@ -102,11 +110,11 @@ export function RoomCard({ room, onViewDetails, onReserve }: RoomCardProps) {
         </div>
 
         {/* Équipements */}
-        {room.equipment.length > 0 && (
+        {roomEquipment.length > 0 && (
           <div className="mb-6">
             <h4 className="text-sm font-medium text-white/60 mb-2">Équipements</h4>
             <div className="flex flex-wrap gap-2">
-              {room.equipment.slice(0, 3).map((equip, index) => (
+              {roomEquipment.slice(0, 3).map((equip, index) => (
                 <span
                   key={index}
                   className="px-2 py-1 bg-white/5 border border-white/10 rounded-full text-xs text-white/70"
@@ -114,9 +122,9 @@ export function RoomCard({ room, onViewDetails, onReserve }: RoomCardProps) {
                   {equip}
                 </span>
               ))}
-              {room.equipment.length > 3 && (
+              {roomEquipment.length > 3 && (
                 <span className="px-2 py-1 text-xs text-white/40">
-                  +{room.equipment.length - 3} autres
+                  +{roomEquipment.length - 3} autres
                 </span>
               )}
             </div>

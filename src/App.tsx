@@ -11,6 +11,7 @@ import { DashboardLayout } from './components/layout/DashboardLayout';
 import { DashboardPage } from './pages/DashboardPage';
 import { PlaningPage } from './pages/PlaningPage';
 import { RoomGalleryPage } from './pages/RoomGalleryPage';
+import { AdminApprovalPage } from './pages/AdminApprovalPage';
 
 // Composants d'authentification
 import { Login } from './components/Login';
@@ -22,7 +23,8 @@ import { ReservationForm } from './components/reservations/ReservationForm';
 import { ReservationList } from './components/reservations/ReservationList';
 
 // Types
-import type { User, Page } from './types/user';
+import type { User } from './types/user';
+import type { Page } from './types/common';
 
 export default function App() {
   const { rooms } = useRooms();
@@ -43,7 +45,7 @@ export default function App() {
       id: Math.random().toString(36).substr(2, 9),
       email: data.email,
       role: 'RESPONSABLE',
-      isProfileComplete: true,
+      profileCompleted: true, // CORRIGÉ: isProfileComplete -> profileCompleted
       firstName: data.firstName,
       lastName: data.lastName,
       departmentId: data.departmentId
@@ -61,7 +63,9 @@ export default function App() {
         id: 'admin_001',
         email, 
         role: 'ADMIN', 
-        isProfileComplete: false
+        profileCompleted: false, // CORRIGÉ: isProfileComplete -> profileCompleted
+        firstName: 'Admin',
+        lastName: 'System'
       };
       setUser(adminUser);
       toast.success("Connexion Admin réussie");
@@ -71,8 +75,10 @@ export default function App() {
         id: Math.random().toString(36).substr(2, 9),
         email, 
         role: 'RESPONSABLE', 
-        isProfileComplete: true,
-        departmentId: '5'
+        profileCompleted: true,
+        departmentId: '5',
+        firstName: 'Responsable',
+        lastName: 'Département'
       };
       setUser(respUser);
       toast.success("Bienvenue Responsable de département");
@@ -84,7 +90,7 @@ export default function App() {
     const updatedUser: User = {
       ...user!,
       ...profileData,
-      isProfileComplete: true
+      profileCompleted: true //  profileCompleted
     };
     setUser(updatedUser);
     toast.success("Profil complété avec succès !");
@@ -133,7 +139,28 @@ export default function App() {
           </div>
         );
 
-      // Pages avec dashboard layout
+      case 'admin_approvals':
+        return (
+          <DashboardLayout
+            user={user}
+            currentPage={currentPage}
+            onNavigate={setCurrentPage}
+            onLogout={handleLogout}
+          >
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={currentPage}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <AdminApprovalPage onNavigate={(page: string) => setCurrentPage(page as Page)} />
+              </motion.div>
+            </AnimatePresence>
+          </DashboardLayout>
+        );
+      
       case 'dashboard':
       case 'planing':
       case 'room_gallery':
@@ -211,7 +238,7 @@ export default function App() {
   );
 }
 
-// Sous-composant pour l'écran de transition
+// Sous-composant pour l'écran de transition (inchangé)
 function TransitionScreen() {
   return (
     <motion.div 

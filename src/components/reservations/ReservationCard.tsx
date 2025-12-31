@@ -36,6 +36,25 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
 
   const statusConfig = getStatusConfig(reservation.status);
 
+  // Créer des dates valides pour TimeDisplay
+  const createDateObject = (dateString: string | undefined, timeString?: string): string | Date | undefined => {
+    if (!dateString) return undefined;
+    
+    if (timeString) {
+      // Combiner date et heure
+      const dateTimeString = `${dateString}T${timeString}:00`;
+      return new Date(dateTimeString);
+    }
+    
+    // Retourner juste la date si pas d'heure spécifiée
+    return new Date(dateString);
+  };
+
+  // Créer les dates pour l'affichage
+  const displayDate = createDateObject(reservation.date);
+  const startDateTime = createDateObject(reservation.date, reservation.startTime);
+  const endDateTime = createDateObject(reservation.date, reservation.endTime);
+
   return (
     <>
       <motion.div
@@ -49,7 +68,9 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
             <div className="flex flex-col lg:flex-row lg:items-start justify-between gap-4 mb-6">
               <div>
                 <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-xl font-bold text-white">{reservation.title}</h3>
+                  <h3 className="text-xl font-bold text-white">
+                    {reservation.title || `Réservation ${reservation.id}`}
+                  </h3>
                   <StatusBadge status={statusConfig.status} label={statusConfig.label} />
                 </div>
                 <p className="text-white/60 mb-4">
@@ -119,12 +140,13 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
                   <span>Date</span>
                 </div>
                 <div className="space-y-1">
-                  <TimeDisplay date={reservation.startDate} showTime={false} showIcon={false} />
+                  {displayDate && (
+                    <TimeDisplay date={displayDate} showTime={false} showIcon={false} />
+                  )}
                   <div className="flex items-center gap-2 text-white/60">
                     <Clock className="w-4 h-4" />
                     <span>
-                      {new Date(reservation.startDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })} - 
-                      {new Date(reservation.endDate).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })}
+                      {reservation.startTime} - {reservation.endTime}
                     </span>
                   </div>
                 </div>
@@ -137,7 +159,7 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
                 </div>
                 <p className="text-white font-medium">{reservation.roomName || 'Salle non spécifiée'}</p>
                 <p className="text-sm text-white/60">
-                  Capacité: {reservation.participants || 'Non spécifié'} personnes
+                  Département: {reservation.department || 'Non spécifié'}
                 </p>
               </div>
 
@@ -190,7 +212,7 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-white/50">Département</p>
-                    <p className="text-white">{reservation.departmentName || 'Non spécifié'}</p>
+                    <p className="text-white">{reservation.department || 'Non spécifié'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-white/50">Créé par</p>
@@ -202,10 +224,10 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
                       <p className="text-white/70">{reservation.comments}</p>
                     </div>
                   )}
-                  {reservation.approvedAt && (
+                  {reservation.updatedAt && (
                     <div>
-                      <p className="text-sm text-white/50">Approuvé le</p>
-                      <TimeDisplay date={reservation.approvedAt} showIcon={false} />
+                      <p className="text-sm text-white/50">Dernière mise à jour</p>
+                      <TimeDisplay date={new Date(reservation.updatedAt)} showIcon={false} />
                     </div>
                   )}
                 </div>

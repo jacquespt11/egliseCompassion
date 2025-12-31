@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { X, Upload, Check, AlertCircle } from 'lucide-react';
-import type { Room } from '../../types/room';
+import type { Room, RoomStatus, RoomType } from '../../types/room';
 import { EQUIPMENT_OPTIONS, ROOM_STATUS } from '../../utils/constants';
 
 interface RoomFormProps {
@@ -19,8 +19,13 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
     description: room?.description || '',
     capacity: room?.capacity || 10,
     location: room?.location || '',
+    type: (room?.type || 'meeting') as RoomType,
+    amenities: room?.amenities || [] as string[],
+    status: (room?.status || 'ACTIVE') as RoomStatus,
+    floor: room?.floor || 0,
+    images: room?.images || [] as string[],
+    color: room?.color || '#3B82F6',
     equipment: room?.equipment || [] as string[],
-    status: room?.status || 'ACTIVE',
     imageUrl: room?.imageUrl || '',
     departmentId: room?.departmentId || '',
   });
@@ -34,6 +39,7 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
     if (!formData.description.trim()) newErrors.description = 'La description est requise';
     if (formData.capacity < 1) newErrors.capacity = 'La capacité doit être positive';
     if (!formData.location.trim()) newErrors.location = 'La localisation est requise';
+    if (formData.floor < 0) newErrors.floor = 'L\'étage ne peut pas être négatif';
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -42,7 +48,22 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (validateForm()) {
-      onSubmit(formData);
+      // Construire l'objet final avec toutes les propriétés requises
+      const roomData: Omit<Room, 'id' | 'createdAt' | 'updatedAt'> = {
+        name: formData.name,
+        description: formData.description,
+        capacity: formData.capacity,
+        location: formData.location,
+        type: formData.type,
+        amenities: formData.amenities,
+        status: formData.status,
+        floor: formData.floor,
+        images: formData.imageUrl ? [...formData.images, formData.imageUrl] : formData.images,
+        color: formData.color,
+        equipment: formData.equipment,
+        departmentId: formData.departmentId || undefined,
+      };
+      onSubmit(roomData);
     }
   };
 
@@ -54,6 +75,33 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
         : [...prev.equipment, equipment]
     }));
   };
+
+  const handleAmenityToggle = (amenity: string) => {
+    setFormData(prev => ({
+      ...prev,
+      amenities: prev.amenities.includes(amenity)
+        ? prev.amenities.filter(a => a !== amenity)
+        : [...prev.amenities, amenity]
+    }));
+  };
+
+  const ROOM_TYPES = [
+    { value: 'meeting', label: 'Salle de réunion' },
+    { value: 'auditorium', label: 'Auditorium' },
+    { value: 'classroom', label: 'Salle de classe' },
+    { value: 'office', label: 'Bureau' },
+  ];
+
+  const AMENITIES_OPTIONS = [
+    { value: 'wifi', label: 'Wi-Fi' },
+    { value: 'air_conditioning', label: 'Climatisation' },
+    { value: 'natural_light', label: 'Lumière naturelle' },
+    { value: 'soundproof', label: 'Insolation acoustique' },
+    { value: 'accessibility', label: 'Accessibilité PMR' },
+    { value: 'parking', label: 'Parking' },
+    { value: 'kitchen', label: 'Cuisine' },
+    { value: 'restrooms', label: 'Toilettes' },
+  ];
 
   return (
     <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
@@ -151,25 +199,101 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
               )}
             </div>
 
-            {/* Localisation */}
+            {/* Localisation et Étage */}
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-white/80 flex items-center gap-2">
+                  Localisation
+                  <span className="text-red-400">*</span>
+                </label>
+                <input
+                  type="text"
+                  value={formData.location}
+                  onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                  className={`w-full bg-white/5 border ${errors.location ? 'border-rose-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400 outline-none`}
+                  placeholder="Ex: Bâtiment A, RDC, porte 205"
+                />
+                {errors.location && (
+                  <p className="text-sm text-rose-400 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" />
+                    {errors.location}
+                  </p>
+                )}
+              </div>
+
+              <div className="space-y-3">
+                <label className="text-sm font-medium text-white/80">
+                  Étage
+                </label>
+                <input
+                  type="number"
+                  min="0"
+                  max="20"
+                  value={formData.floor}
+                  onChange={(e) => setFormData({ ...formData, floor: parseInt(e.target.value) || 0 })}
+                  className={`w-full bg-white/5 border ${errors.floor ? 'border-rose-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400 outline-none`}
+                  placeholder="0 pour le RDC"
+                />
+                {errors.floor && (
+                  <p className="text-sm text-rose-400 flex items-center gap-1">
+                    <AlertCircle className="w-4 h-4" />
+                    {errors.floor}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Type de salle */}
             <div className="space-y-3">
-              <label className="text-sm font-medium text-white/80 flex items-center gap-2">
-                Localisation
-                <span className="text-red-400">*</span>
+              <label className="text-sm font-medium text-white/80">
+                Type de salle
               </label>
-              <input
-                type="text"
-                value={formData.location}
-                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
-                className={`w-full bg-white/5 border ${errors.location ? 'border-rose-500' : 'border-white/10'} rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400 outline-none`}
-                placeholder="Ex: Bâtiment A, RDC, porte 205"
-              />
-              {errors.location && (
-                <p className="text-sm text-rose-400 flex items-center gap-1">
-                  <AlertCircle className="w-4 h-4" />
-                  {errors.location}
-                </p>
-              )}
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {ROOM_TYPES.map((type) => (
+                  <div
+                    key={type.value}
+                    onClick={() => setFormData({ ...formData, type: type.value as RoomType })}
+                    className={`p-4 rounded-xl border cursor-pointer transition-all text-center ${
+                      formData.type === type.value
+                        ? 'bg-blue-500/20 border-blue-500/30 text-blue-300'
+                        : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                    }`}
+                  >
+                    <span className="text-sm font-medium">{type.label}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Commodités (Amenities) */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-white/80">
+                Commodités
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                {AMENITIES_OPTIONS.map((amenity) => (
+                  <div
+                    key={amenity.value}
+                    onClick={() => handleAmenityToggle(amenity.value)}
+                    className={`p-3 rounded-xl border cursor-pointer transition-all flex items-center gap-3 ${
+                      formData.amenities.includes(amenity.value)
+                        ? 'bg-green-500/20 border-green-500/30 text-green-300'
+                        : 'bg-white/5 border-white/10 text-white/70 hover:bg-white/10'
+                    }`}
+                  >
+                    <div className={`w-6 h-6 rounded flex items-center justify-center ${
+                      formData.amenities.includes(amenity.value)
+                        ? 'bg-green-500'
+                        : 'bg-white/10'
+                    }`}>
+                      {formData.amenities.includes(amenity.value) && (
+                        <Check className="w-4 h-4 text-white" />
+                      )}
+                    </div>
+                    <span className="text-sm">{amenity.label}</span>
+                  </div>
+                ))}
+              </div>
             </div>
 
             {/* Équipements */}
@@ -212,7 +336,7 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
                 {Object.entries(ROOM_STATUS).map(([key, value]) => (
                   <div
                     key={key}
-                    onClick={() => setFormData({ ...formData, status: key as Room['status'] })}
+                    onClick={() => setFormData({ ...formData, status: key as RoomStatus })}
                     className={`p-4 rounded-xl border cursor-pointer transition-all text-center ${
                       formData.status === key
                         ? value.color + ' border-current/30'
@@ -227,6 +351,28 @@ export function RoomForm({ room, onSubmit, onClose }: RoomFormProps) {
                     <span className="text-sm font-medium">{value.label}</span>
                   </div>
                 ))}
+              </div>
+            </div>
+
+            {/* Couleur */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-white/80">
+                Couleur d'affichage
+              </label>
+              <div className="flex items-center gap-3">
+                <input
+                  type="color"
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  className="w-12 h-12 rounded cursor-pointer"
+                />
+                <input
+                  type="text"
+                  value={formData.color}
+                  onChange={(e) => setFormData({ ...formData, color: e.target.value })}
+                  className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400 outline-none"
+                  placeholder="#3B82F6"
+                />
               </div>
             </div>
 

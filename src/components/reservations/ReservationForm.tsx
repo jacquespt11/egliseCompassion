@@ -18,12 +18,26 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
   const { createReservation, loading } = useReservations();
   const { validateReservation, checkRoomAvailability } = useBookingRules();
   
+  // Fonction pour formater la date au format YYYY-MM-DD
+  const formatDate = (date: Date): string => {
+    return date.toISOString().split('T')[0];
+  };
+
+  // Fonction pour formater l'heure au format HH:MM
+  const formatTime = (date: Date): string => {
+    return date.toTimeString().slice(0, 5);
+  };
+
+  const now = new Date();
+  const defaultEndTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 heures
+
   const [formData, setFormData] = useState<CreateReservationDto>({
     roomId: '',
     title: '',
     description: '',
-    startDate: new Date(),
-    endDate: new Date(),
+    date: formatDate(now), // Format YYYY-MM-DD
+    startTime: formatTime(now), // Format HH:MM
+    endTime: formatTime(defaultEndTime), // Format HH:MM
     participants: 1,
     equipmentRequested: [],
     departmentId: currentDepartmentId || '',
@@ -35,17 +49,31 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
     conflict: null 
   });
 
+  // Convertir les données du formulaire en un objet compatible avec validateReservation
+  const getReservationForValidation = () => {
+    return {
+      ...formData,
+      // Créer des objets Date pour la validation si nécessaire
+      startDate: new Date(`${formData.date}T${formData.startTime}`),
+      endDate: new Date(`${formData.date}T${formData.endTime}`),
+    };
+  };
+
   // Validation en temps réel
   useEffect(() => {
-    const result = validateReservation(formData);
+    const reservationForValidation = getReservationForValidation();
+    const result = validateReservation(reservationForValidation as any);
     setValidationResult(result);
     
-    if (formData.roomId && formData.startDate && formData.endDate) {
+    if (formData.roomId && formData.date && formData.startTime && formData.endTime) {
+      const startDateTime = new Date(`${formData.date}T${formData.startTime}`);
+      const endDateTime = new Date(`${formData.date}T${formData.endTime}`);
+      
       // Utiliser les réservations existantes depuis le hook si disponible
       const availabilityCheck = checkRoomAvailability(
         formData.roomId,
-        formData.startDate,
-        formData.endDate,
+        startDateTime,
+        endDateTime,
         [] // Pour l'instant, tableau vide - à remplacer par les réservations réelles
       );
       setAvailability(availabilityCheck);
@@ -151,41 +179,51 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
                   Description
                 </label>
                 <textarea
-                  value={formData.description}
+                  value={formData.description || ''}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none min-h-[100px]"
                   placeholder="Décrivez l'activité prévue..."
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Date de début *
+                    Date *
                   </label>
                   <input
-                    type="datetime-local"
+                    type="date"
                     required
-                    value={formData.startDate.toISOString().slice(0, 16)}
-                    onChange={(e) => setFormData({ 
-                      ...formData, 
-                      startDate: new Date(e.target.value),
-                      endDate: new Date(Math.max(new Date(e.target.value).getTime(), formData.endDate.getTime()))
-                    })}
+                    value={formData.date}
+                    onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                    min={formatDate(new Date())}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none"
                   />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-white/80 mb-2">
-                    Date de fin *
+                    Heure de début *
                   </label>
                   <input
-                    type="datetime-local"
+                    type="time"
                     required
-                    value={formData.endDate.toISOString().slice(0, 16)}
-                    onChange={(e) => setFormData({ ...formData, endDate: new Date(e.target.value) })}
-                    min={formData.startDate.toISOString().slice(0, 16)}
+                    value={formData.startTime}
+                    onChange={(e) => setFormData({ ...formData, startTime: e.target.value })}
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-white/80 mb-2">
+                    Heure de fin *
+                  </label>
+                  <input
+                    type="time"
+                    required
+                    value={formData.endTime}
+                    onChange={(e) => setFormData({ ...formData, endTime: e.target.value })}
+                    min={formData.startTime}
                     className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none"
                   />
                 </div>
@@ -218,7 +256,14 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
               <select
                 required
                 value={formData.roomId}
-                onChange={(e) => setFormData({ ...formData, roomId: e.target.value })}
+                onChange={(e) => {
+                  const selectedRoom = rooms.find(r => r.id === e.target.value);
+                  setFormData({ 
+                    ...formData, 
+                    roomId: e.target.value,
+                    roomName: selectedRoom?.name
+                  });
+                }}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none"
               >
                 <option value="">Sélectionnez une salle</option>
@@ -275,13 +320,13 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {[
-                'projector', 'screen', 'whiteboard', 'sound_system', 
-                'microphone', 'wifi', 'coffee_machine', 'printer'
+                'projecteur', 'écran', 'tableau blanc', 'système audio', 
+                'microphone', 'wifi', 'machine à café', 'imprimante'
               ].map(equipment => (
                 <label key={equipment} className="flex items-center gap-3 p-3 bg-white/5 hover:bg-white/10 rounded-xl cursor-pointer transition-colors">
                   <input
                     type="checkbox"
-                    checked={formData.equipmentRequested?.includes(equipment)}
+                    checked={(formData.equipmentRequested || []).includes(equipment)}
                     onChange={(e) => {
                       const current = formData.equipmentRequested || [];
                       if (e.target.checked) {
@@ -295,7 +340,7 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
                     }}
                     className="w-4 h-4 rounded border-white/20 bg-white/5 text-blue-500 focus:ring-blue-500/50"
                   />
-                  <span className="text-white/80 capitalize">{equipment.replace('_', ' ')}</span>
+                  <span className="text-white/80 capitalize">{equipment}</span>
                 </label>
               ))}
             </div>

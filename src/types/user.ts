@@ -1,32 +1,24 @@
-// src/types/user.ts
+export type UserRole = 'RESPONSABLE' | 'ADMIN' | 'USER';
 
-export type Page = 'transition' | 'login' | 'register' | 'admin_profile_edit' | 
-                  'dashboard' | 'planing' | 'room_gallery' | 'reservation_form' | 
-                  'my_reservations' | 'profile' | 'notifications' | 'settings';
-
-export type UserRole = 'ADMIN' | 'RESPONSABLE';
-
-export interface User {
+export type User = {
   id: string;
   email: string;
-  role: UserRole;
-  isProfileComplete: boolean;
+  role: UserRole; 
+  department?: string;
+  profileCompleted?: boolean;
   firstName?: string;
   lastName?: string;
   phone?: string;
-  departmentId?: string;
-  departmentName?: string;
-  avatar?: string;
-}
+  createdAt?: string;
+  updatedAt?: string;
+  isActive?: boolean;
+  departmentId?: string; 
+};
 
 export type Department = {
   id: string;
   name: string;
   description?: string;
-  managerId?: string;
-  createdAt: Date;
+  createdAt: string;
+  updatedAt: string;
 };
-
-// Ré-exporter aussi les types qui pourraient être utilisés ailleurs
-export * from './room';
-export * from './reservation';

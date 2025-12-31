@@ -27,16 +27,32 @@ export function RoomSelector({ rooms, selectedRoom, onSelectRoom, filters }: Roo
     const matchesCapacity = !filters?.capacity || room.capacity >= filters.capacity;
     const matchesDepartment = !filters?.departmentId || room.departmentId === filters.departmentId;
     
-    return matchesSearch && matchesCapacity && matchesDepartment;
+    // Filtre par équipement
+    let matchesEquipment = true;
+    if (filters?.equipment && filters.equipment.length > 0) {
+      const roomEquipment = room.equipment || [];
+      matchesEquipment = filters.equipment.every(eq => roomEquipment.includes(eq));
+    }
+    
+    return matchesSearch && matchesCapacity && matchesDepartment && matchesEquipment;
   });
 
   const getEquipmentIcon = (equipment: string) => {
-    switch (equipment) {
+    switch (equipment.toLowerCase()) {
       case 'wifi': return '📶';
+      case 'projecteur': return '📽️';
       case 'projector': return '📽️';
+      case 'tableau blanc': return '📋';
       case 'whiteboard': return '📋';
+      case 'machine à café': return '☕';
       case 'coffee_machine': return '☕';
+      case 'système audio': return '🔊';
       case 'sound_system': return '🔊';
+      case 'écran': return '🖥️';
+      case 'screen': return '🖥️';
+      case 'microphone': return '🎤';
+      case 'imprimante': return '🖨️';
+      case 'printer': return '🖨️';
       default: return '⚙️';
     }
   };
@@ -92,6 +108,8 @@ export function RoomSelector({ rooms, selectedRoom, onSelectRoom, filters }: Roo
         }>
           {filteredRooms.map((room) => {
             const isSelected = selectedRoom?.id === room.id;
+            const roomEquipment = room.equipment || [];
+            const roomImage = room.imageUrl || (room.images && room.images[0]) || '/room-placeholder.jpg';
             
             return (
               <div
@@ -109,9 +127,12 @@ export function RoomSelector({ rooms, selectedRoom, onSelectRoom, filters }: Roo
                   {/* Image */}
                   <div className="relative flex-shrink-0">
                     <img
-                      src={room.imageUrl || '/room-placeholder.jpg'}
+                      src={roomImage}
                       alt={room.name}
                       className="w-20 h-20 rounded-lg object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = '/room-placeholder.jpg';
+                      }}
                     />
                     {isSelected && (
                       <div className="absolute -top-2 -right-2 w-8 h-8 rounded-full bg-green-500 flex items-center justify-center">
@@ -138,22 +159,24 @@ export function RoomSelector({ rooms, selectedRoom, onSelectRoom, filters }: Roo
                     </div>
 
                     {/* Équipements */}
-                    <div className="flex flex-wrap gap-1">
-                      {room.equipment.slice(0, 4).map((eq, idx) => (
-                        <span
-                          key={idx}
-                          className="px-2 py-1 bg-white/10 rounded text-xs text-white/70"
-                          title={eq}
-                        >
-                          {getEquipmentIcon(eq)} {eq}
-                        </span>
-                      ))}
-                      {room.equipment.length > 4 && (
-                        <span className="px-2 py-1 bg-white/10 rounded text-xs text-white/50">
-                          +{room.equipment.length - 4}
-                        </span>
-                      )}
-                    </div>
+                    {roomEquipment.length > 0 && (
+                      <div className="flex flex-wrap gap-1">
+                        {roomEquipment.slice(0, 4).map((eq, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 bg-white/10 rounded text-xs text-white/70"
+                            title={eq}
+                          >
+                            {getEquipmentIcon(eq)} {eq}
+                          </span>
+                        ))}
+                        {roomEquipment.length > 4 && (
+                          <span className="px-2 py-1 bg-white/10 rounded text-xs text-white/50">
+                            +{roomEquipment.length - 4}
+                          </span>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

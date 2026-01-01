@@ -15,6 +15,8 @@ export type SystemStats = {
   totalReservations: number;
   pendingApprovals: number;
   totalUsers: number;
+  occupancyRate?: number; 
+  avgResponseTime?: string; 
   activeReservations: number;
   activeUsers?: number;
   availableRooms: number;

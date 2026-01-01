@@ -19,7 +19,7 @@ export const useAuth = () => {
         email: email,
         department: 'Genius Hub',
         role: 'ADMIN',
-        status: 'ACTIVE',
+        status: 'active',
         createdAt: new Date().toISOString(),
         profileCompleted: true,
         phone: '',

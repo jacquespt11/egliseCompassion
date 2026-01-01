@@ -9,6 +9,8 @@ export type User = {
   firstName?: string;
   lastName?: string;
   phone?: string;
+  status?: 'active' | 'inactive' | 'pending';
+  avatar?: string;
   createdAt?: string;
   updatedAt?: string;
   isActive?: boolean;

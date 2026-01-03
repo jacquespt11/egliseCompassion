@@ -31,6 +31,7 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
   const now = new Date();
   const defaultEndTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 heures
 
+  // ✅ CORRECTION : Utilisez le nouveau type CreateReservationDto sans roomName
   const [formData, setFormData] = useState<CreateReservationDto>({
     roomId: '',
     title: '',
@@ -49,8 +50,14 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
     conflict: null 
   });
 
+  // ✅ CORRECTION : Utilisez un type séparé pour la validation
+  interface ValidationReservation extends CreateReservationDto {
+    startDate?: Date;
+    endDate?: Date;
+  }
+
   // Convertir les données du formulaire en un objet compatible avec validateReservation
-  const getReservationForValidation = () => {
+  const getReservationForValidation = (): ValidationReservation => {
     return {
       ...formData,
       // Créer des objets Date pour la validation si nécessaire
@@ -80,6 +87,16 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
     }
   }, [formData, validateReservation, checkRoomAvailability]);
 
+  // Mettre à jour departmentId si currentDepartmentId change
+  useEffect(() => {
+    if (currentDepartmentId && currentDepartmentId !== formData.departmentId) {
+      setFormData(prev => ({
+        ...prev,
+        departmentId: currentDepartmentId
+      }));
+    }
+  }, [currentDepartmentId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
@@ -93,8 +110,21 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
       return;
     }
 
+    // ✅ CORRECTION : S'assurer que tous les champs obligatoires sont présents
+    const reservationData: CreateReservationDto = {
+      roomId: formData.roomId,
+      title: formData.title,
+      description: formData.description || '',
+      date: formData.date,
+      startTime: formData.startTime,
+      endTime: formData.endTime,
+      participants: formData.participants || 1,
+      equipmentRequested: formData.equipmentRequested || [],
+      departmentId: formData.departmentId,
+    };
+
     try {
-      await createReservation(formData);
+      await createReservation(reservationData);
       toast.success('Réservation créée avec succès !');
       onSuccess();
     } catch (error) {
@@ -238,7 +268,7 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
                   min="1"
                   required
                   value={formData.participants || 1}
-                  onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) })}
+                  onChange={(e) => setFormData({ ...formData, participants: parseInt(e.target.value) || 1 })}
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none"
                 />
               </div>
@@ -257,11 +287,9 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
                 required
                 value={formData.roomId}
                 onChange={(e) => {
-                  const selectedRoom = rooms.find(r => r.id === e.target.value);
                   setFormData({ 
                     ...formData, 
-                    roomId: e.target.value,
-                    roomName: selectedRoom?.name
+                    roomId: e.target.value
                   });
                 }}
                 className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none"

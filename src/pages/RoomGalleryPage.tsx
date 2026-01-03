@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Grid, List, Star, Users } from 'lucide-react';
 import { useRooms } from '../hooks/useRooms';
-import type { Page } from '../types/user';
+import type { Page } from '../types/common';
 
 interface RoomGalleryPageProps {
   user: any;

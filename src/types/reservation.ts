@@ -5,7 +5,6 @@ export type Reservation = {
   userId: string;
   userName: string;
   userEmail: string;
-  department: string;
   roomId: string;
   roomName: string;
   date: string;
@@ -22,7 +21,8 @@ export type Reservation = {
   createdAt: string;
   updatedAt: string;
   rejectionReason?: string;
-  departmentName?: string; 
+  departmentName?: string;
+  departmentId: string; 
   startDate?: string;
 };
 
@@ -32,6 +32,16 @@ export interface TimeSlot {
   isAvailable: boolean;
 }
 
-export type CreateReservationDto = Omit<Reservation, 
-  'id' | 'createdAt' | 'updatedAt' | 'status' | 'userId' | 'userName' | 'userEmail' | 'department'
->;
+export interface CreateReservationDto {
+  roomId: string;
+  title: string;
+  description?: string;
+  date: string; // YYYY-MM-DD
+  startTime: string; // HH:MM
+  endTime: string; // HH:MM
+  participants: number;
+  equipmentRequested?: string[];
+  departmentId: string;
+  
+}
+

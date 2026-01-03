@@ -159,7 +159,7 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
                 </div>
                 <p className="text-white font-medium">{reservation.roomName || 'Salle non spécifiée'}</p>
                 <p className="text-sm text-white/60">
-                  Département: {reservation.department || 'Non spécifié'}
+                  Département: {reservation.departmentName || 'Non spécifié'}
                 </p>
               </div>
 
@@ -212,7 +212,7 @@ export function ReservationCard({ reservation, onEdit, onCancel, onViewDetails, 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-white/50">Département</p>
-                    <p className="text-white">{reservation.department || 'Non spécifié'}</p>
+                    <p className="text-white">{reservation.departmentName || 'Non spécifié'}</p>
                   </div>
                   <div>
                     <p className="text-sm text-white/50">Créé par</p>

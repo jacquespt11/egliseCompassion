@@ -1,5 +1,7 @@
 export type UserRole = 'RESPONSABLE' | 'ADMIN' | 'USER';
 
+export type ApprovalStatus = 'APPROVED' | 'PENDING' | 'REJECTED';
+
 export type User = {
   id: string;
   email: string;
@@ -14,7 +16,9 @@ export type User = {
   createdAt?: string;
   updatedAt?: string;
   isActive?: boolean;
-  departmentId?: string; 
+  departmentId?: string;
+  approvalStatus?: ApprovalStatus;
+  lastLogin?: string; 
 };
 
 export type Department = {

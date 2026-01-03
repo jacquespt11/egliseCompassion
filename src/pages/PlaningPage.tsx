@@ -1,13 +1,14 @@
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Users, ChevronRight } from 'lucide-react';
-import type { User, Page } from '../types/user';
+import type { User } from '../types/user';
+import type { Page } from '../types/common';
 
 interface PlaningPageProps {
   user: User | null;
   onNavigate: (page: Page) => void;
 }
 
-export function PlaningPage({ user, onNavigate }: PlaningPageProps) {
+export function PlaningPage({  onNavigate }: PlaningPageProps) {
   const reservations = [
     { id: 1, room: 'Salle de conférence principale', time: '9h-11h', status: 'confirmed', capacity: 50 },
     { id: 2, room: 'Salle de réunion B', time: '14h-16h', status: 'pending', capacity: 12 },

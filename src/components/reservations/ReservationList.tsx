@@ -40,7 +40,7 @@ export function ReservationList({
         (reservation.description || '').toLowerCase().includes(searchLower) ||
         reservation.roomName.toLowerCase().includes(searchLower) ||
         (reservation.userName || '').toLowerCase().includes(searchLower) ||
-        reservation.department.toLowerCase().includes(searchLower);
+        reservation.departmentId.toLowerCase().includes(searchLower);
       
       if (!matchesSearch) return false;
     }

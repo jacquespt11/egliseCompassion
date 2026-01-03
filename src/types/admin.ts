@@ -147,19 +147,23 @@ export interface AdminSettings {
 }
 
 // Types pour la gestion des utilisateurs
+export type AdminUserStatus = 'active' | 'inactive' | 'pending' | 'banned';
+export type AdminUserRole = 'admin' | 'department_leader' | 'user' | 'ADMIN' | 'RESPONSABLE' | 'USER';
 export interface AdminUser {
   id: string;
   name: string;
   email: string;
   department: string;
-  role: 'admin' | 'user' | 'department_leader';
-  status: 'active' | 'pending' | 'inactive' | 'suspended';
+  role: AdminUserRole;
+  status: AdminUserStatus;
   reservationsCount: number;
   lastLogin: string;
   createdAt: string;
   approved: boolean;
   profileCompleted: boolean;
   phone?: string;
+  firstName?: string;
+  lastName?: string;
 }
 
 // Types pour les rapports

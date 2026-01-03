@@ -14,6 +14,9 @@ module.exports = {
           700: '#b91c1c',
           800: '#991b1b',
           900: '#7f1d1d',
+        },
+        custom: {
+          darkblue: '#05102D'
         }
       }
     }

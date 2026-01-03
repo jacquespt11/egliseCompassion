@@ -31,7 +31,7 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
   const now = new Date();
   const defaultEndTime = new Date(now.getTime() + 2 * 60 * 60 * 1000); // +2 heures
 
-  // ✅ CORRECTION : Utilisez le nouveau type CreateReservationDto sans roomName
+  // Utilisez le nouveau type CreateReservationDto sans roomName
   const [formData, setFormData] = useState<CreateReservationDto>({
     roomId: '',
     title: '',
@@ -50,7 +50,7 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
     conflict: null 
   });
 
-  // ✅ CORRECTION : Utilisez un type séparé pour la validation
+  //  Utilisez un type séparé pour la validation
   interface ValidationReservation extends CreateReservationDto {
     startDate?: Date;
     endDate?: Date;
@@ -110,7 +110,7 @@ export function ReservationForm({ rooms, currentDepartmentId, onSuccess, onCance
       return;
     }
 
-    // ✅ CORRECTION : S'assurer que tous les champs obligatoires sont présents
+    //  S'assurer que tous les champs obligatoires sont présents
     const reservationData: CreateReservationDto = {
       roomId: formData.roomId,
       title: formData.title,

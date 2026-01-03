@@ -35,15 +35,16 @@ import type { PageId } from './types/routes';
 import { useRooms } from './hooks/useRooms';
 import { ThemeProvider } from './contexts/ThemeContext';
 
-// Écran de transition
+// Sous-composant pour l'écran de transition (inchangé)
 function TransitionScreen() {
   return (
     <motion.div 
-      className="flex min-h-screen flex-col items-center justify-center text-center space-y-16 max-w-5xl mx-auto p-4"
+      className="flex min-h-screen flex-col items-center justify-center text-center space-y-16 max-w-5xl mx-auto"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
     >
+      {/* Logo avec effet de halo */}
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
@@ -51,40 +52,95 @@ function TransitionScreen() {
         className="relative"
       >
         <div className="absolute -inset-12 bg-gradient-to-r from-blue-500/20 via-purple-500/20 to-blue-500/20 blur-3xl rounded-full animate-pulse" />
-        <div className="relative bg-white/10 backdrop-blur-sm rounded-2xl p-8 border border-white/20">
-          <h1 className="text-6xl md:text-7xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-white to-purple-300">
-            La Compassion
-          </h1>
-          <p className="text-2xl md:text-3xl text-white/80 mt-4">Système de réservation de salles</p>
-        </div>
+        <img
+          src="https://egliselacompassion.org/wp-content/uploads/2025/01/LA-COMPASSION-1024x254-1-2.png"
+          alt="logo église la compassion"
+          className="relative w-[900px] max-w-full rounded-xl shadow-2xl"
+        />
       </motion.div>
 
+      {/* Contenu textuel avec animations */}
+      <div className="space-y-10">
+        {/* Titre principal avec effet moderne */}
+        <motion.div
+          initial={{ opacity: 0, y: 40 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, delay: 0.5 }}
+          className="space-y-6"
+        >
+          <h1 className="text-[100px] md:text-[120px] font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-white to-purple-300 leading-tight tracking-tight">
+            CHURCHSPACE LC
+          </h1>
+          
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 0.8 }}
+            className="text-3xl md:text-4xl text-white/80 font-light tracking-wider"
+          >
+            La Compassion • Centre Évangélique
+          </motion.p>
+        </motion.div>
+
+        {/* Ligne décorative animée */}
+        <motion.div
+          initial={{ opacity: 0, scaleX: 0 }}
+          animate={{ opacity: 1, scaleX: 1 }}
+          transition={{ duration: 1.2, delay: 1 }}
+          className="h-2 w-96 mx-auto bg-gradient-to-r from-transparent via-blue-400/80 to-transparent rounded-full shadow-lg"
+        />
+      </div>
+
+      {/* Indicateur de chargement stylisé */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 1, delay: 1.2 }}
+        className="pt-12"
       >
-        <div className="flex flex-col items-center justify-center space-y-4">
-          <div className="flex space-x-2">
-            {[...Array(3)].map((_, i) => (
+        <div className="flex flex-col items-center justify-center space-y-8">
+          {/* Points animés en cascade */}
+          <div className="flex items-center justify-center space-x-4">
+            {[...Array(5)].map((_, i) => (
               <motion.div
                 key={i}
-                className="w-3 h-3 bg-blue-400 rounded-full"
-                animate={{
-                  scale: [1, 1.5, 1],
-                  opacity: [0.5, 1, 0.5]
+                className="h-5 w-5 rounded-full bg-gradient-to-br from-blue-400 to-purple-500 shadow-lg"
+                initial={{ opacity: 0.3, scale: 0.8 }}
+                animate={{ 
+                  opacity: [0.3, 1, 0.3],
+                  scale: [0.8, 1.2, 0.8]
                 }}
-                transition={{
-                  duration: 1,
+                transition={{ 
+                  duration: 1.5,
                   repeat: Infinity,
-                  delay: i * 0.2
+                  delay: i * 0.1,
+                  ease: "easeInOut"
                 }}
               />
             ))}
           </div>
-          <p className="text-white/70">Chargement du système...</p>
+          
+          {/* Texte de chargement */}
+          <motion.span
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.8, delay: 1.4 }}
+            className="text-xl font-medium text-white/70 tracking-wider"
+          >
+            Initialisation du système...
+          </motion.span>
         </div>
       </motion.div>
+
+      {/* Note discrète en bas */}
+      <motion.p
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1, delay: 2 }}
+        className="text-sm text-white/40 font-light pt-16"
+      >
+        Version Professionnelle 2.0 • © 2025 La Compassion
+      </motion.p>
     </motion.div>
   );
 }

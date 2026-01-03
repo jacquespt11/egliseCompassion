@@ -107,7 +107,7 @@ export function DashboardLayout({
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
       
       {/* HEADER : FORCÉ PLEINE LARGEUR + COULEUR DISTINCTE */}
-      <header className="fixed top-0 left-0 w-full h-16 bg-gradient-to-r from-slate-900 to-slate-800 dark:from-black dark:to-gray-900 text-white z-[100] shadow-xl border-b border-slate-700/50 dark:border-gray-800/50">
+      <header style={{ backgroundColor: '#05102D' }} className="fixed top-0 left-0 w-full h-16 text-white z-[100] shadow-xl border-b border-slate-700/50 dark:border-gray-800/50">
         <div className="h-full px-4 flex items-center justify-between">
           
           <div className="flex items-center gap-4">

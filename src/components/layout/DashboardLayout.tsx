@@ -101,7 +101,7 @@ export function DashboardLayout({
   };
 
   // Notification state
-  const hasUnreadNotifications = true; // À remplacer par votre logique réelle
+  const hasUnreadNotifications = true; 
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -137,7 +137,7 @@ export function DashboardLayout({
                 <Home className="w-5 h-5 text-white" />
               </div>
               <div className="hidden sm:block">
-                <h1 className="font-bold text-white text-lg tracking-tight">La Compassion</h1>
+                <h1 className="font-bold text-white text-lg tracking-tight">Compassion</h1>
                 <p className="text-[10px] text-blue-300/80 uppercase tracking-[0.2em] font-bold">Workspace</p>
               </div>
             </div>
@@ -146,7 +146,7 @@ export function DashboardLayout({
             <div className="hidden md:flex items-center gap-3 ml-6 pl-6 border-l border-slate-700/50">
               <div className="h-6 w-1 bg-gradient-to-b from-blue-400 to-blue-600 rounded-full"></div>
               <div>
-                <p className="text-sm font-semibold text-white">{getPageTitle(currentPage)}</p>
+                <p className="text-sm font-bold text-white">{getPageTitle(currentPage)}</p>
                 <p className="text-xs text-blue-300/70">
                   {currentPage.startsWith('admin') ? 'Administration' : 'Gestion des réservations'}
                 </p>

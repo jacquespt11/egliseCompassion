@@ -3,10 +3,9 @@ import { Activity, Search, Filter, Download, Eye, User as UserIcon, Building2, C
 import type { User as UserType } from '../types/user';
 import type { AuditLogEntry } from '../types/admin';
 import { ADMIN_ROUTES } from '../utils/adminRoutes';
+import { AdminAuditPageProps } from '../types/component-props';
 
-interface AdminAuditPageProps {
-  user: UserType | null;
-}
+
 
 const AdminAuditPage: React.FC<AdminAuditPageProps> = ({ user }) => {
   const auditLogs: AuditLogEntry[] = [

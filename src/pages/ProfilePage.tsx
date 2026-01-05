@@ -24,11 +24,11 @@ import {
   ChevronRight
 } from 'lucide-react';
 import type { User as UserType } from '../types/user';
-import type { Page } from '../types/common';
+import type { PageId } from '../types/common';
 
 interface ProfilePageProps {
   user: UserType | null;
-  onNavigate: (page: Page) => void;
+  onNavigate: (page: PageId) => void;
   onUpdateProfile: (data: Partial<UserType>) => Promise<void>;
 }
 

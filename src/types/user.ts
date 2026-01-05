@@ -11,6 +11,8 @@ export type User = {
   firstName?: string;
   lastName?: string;
   phone?: string;
+  position?: string;
+  bio?: string;
   status?: 'active' | 'inactive' | 'pending';
   avatar?: string;
   createdAt?: string;

@@ -71,6 +71,7 @@ export type ApprovalRequest = {
   submittedAt: string;
   reviewedAt?: string;
   reviewedBy?: string;
+  createdAt: string;
   comments?: string;
   roomId?: string;
   roomName?: string;

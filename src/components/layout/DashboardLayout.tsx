@@ -363,15 +363,15 @@ export function DashboardLayout({
                   </div>
                 </div>
                 
-                <button
-                  onClick={onLogout}
-                  className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-red-600/10 text-red-300 hover:text-white hover:from-red-500/30 hover:to-red-600/20 transition-all border border-red-500/30 hover:border-red-500/50 font-bold group"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <LogOut className="w-5 h-5 group-hover:rotate-180 transition-transform duration-300" />
-                  <span>Déconnexion</span>
-                </button>
+                <motion.button
+                 onClick={onLogout} // Changez handleLogout par onLogout
+                 className="w-full flex items-center justify-center gap-3 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/20 to-red-600/10 text-red-300 hover:text-white font-semibold border border-red-500/30 hover:border-red-500/50 hover:bg-red-500/20 transition-all group"
+                 whileHover={{ scale: 1.02 }}
+                 whileTap={{ scale: 0.98 }}
+                     >
+                <LogOut className="w-5 h-5" />
+                <span>Déconnexion</span>
+                </motion.button>
               </div>
             </motion.aside>
           </>

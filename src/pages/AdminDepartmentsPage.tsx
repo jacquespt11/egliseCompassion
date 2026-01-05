@@ -3,16 +3,15 @@ import { Building2, Users, Activity, Plus } from 'lucide-react';
 import type { User } from '../types/user';
 import type { Department } from '../types/admin';
 import { ADMIN_ROUTES } from '../utils/adminRoutes';
+import { AdminDepartmentsPageProps } from '../types/component-props';
 
-interface AdminDepartmentsPageProps {
-  user: User | null;
-}
 
-const AdminDepartmentsPage: React.FC<AdminDepartmentsPageProps> = ({ user }) => {
+
+const AdminDepartmentsPage: React.FC<AdminDepartmentsPageProps> = ({ user, onNavigate }) => {
   const departments: Department[] = [
     { 
       id: '1', 
-      name: 'Musique', 
+      name: 'Chorale', 
       description: 'Département de musique et louange',
       leader: 'Jean Dupont',
       leaderEmail: 'jean.dupont@compassion.org',

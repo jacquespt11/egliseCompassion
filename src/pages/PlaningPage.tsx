@@ -2,11 +2,11 @@
 import { motion } from 'framer-motion';
 import { Calendar, Clock, Users, ChevronRight, Plus, BarChart, Zap, Filter, Download, RefreshCw } from 'lucide-react';
 import type { User } from '../types/user';
-import type { Page } from '../types/common';
+import type { PageId } from '../types/common';
 
 interface PlaningPageProps {
   user: User | null;
-  onNavigate: (page: Page) => void;
+  onNavigate: (page: PageId) => void;
 }
 
 export function PlaningPage({ user, onNavigate }: PlaningPageProps) {

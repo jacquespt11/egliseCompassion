@@ -25,6 +25,7 @@ export function useAdmin() {
           department: 'Musique',
           status: 'pending',
           submittedAt: '2024-01-10T10:00:00Z',
+          createdAt: '2024-01-10T08:30:00Z',
           type: 'USER_REGISTRATION'
         },
         {
@@ -41,6 +42,7 @@ export function useAdmin() {
           purpose: 'Réunion importante',
           status: 'pending',
           submittedAt: '2024-01-11T09:30:00Z',
+          createdAt: '2024-01-10T08:30:00Z',
           type: 'RESERVATION'
         }
       ];

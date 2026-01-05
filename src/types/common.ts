@@ -1,16 +1,4 @@
-export type Page = 
-  | 'transition'
-  | 'login'
-  | 'register'
-  | 'admin_profile_edit'
-  | 'admin_approvals'
-  | 'dashboard'
-  | 'planing'
-  | 'room_gallery'
-  | 'my_reservations'
-  | 'reservation_form'
-  | 'admin_dashboard'
-  | 'admin_users'
-  | 'admin_settings'
-  | 'admin_rooms'
-  | 'admin_notifications';
+// types/commons.ts
+// src/types/common.ts
+export { PageId, PageMetadata, NavigationProps } from './routes';
+//

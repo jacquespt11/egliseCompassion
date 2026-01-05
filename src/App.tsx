@@ -30,12 +30,15 @@ import { ReservationList } from './components/reservations/ReservationList';
 // Types
 import type { User, UserRole } from './types/user';
 import type { PageId } from './types/routes';
+import type { Reservation } from './types/reservation'; // Import ajouté
 
 // Hooks
 import { useRooms } from './hooks/useRooms';
 import { ThemeProvider } from './contexts/ThemeContext';
 
-// Sous-composant pour l'écran de transition (inchangé)
+// =====================================================================
+// SOUS-COMPOSANT : ÉCRAN DE TRANSITION
+// =====================================================================
 function TransitionScreen() {
   return (
     <motion.div 
@@ -145,12 +148,19 @@ function TransitionScreen() {
   );
 }
 
+// =====================================================================
+// COMPOSANT PRINCIPAL DE L'APPLICATION
+// =====================================================================
 function AppContent() {
   const { rooms } = useRooms();
   const [currentPage, setCurrentPage] = useState<PageId>('transition');
   const [user, setUser] = useState<User | null>(null);
 
-  // Transition initiale
+  // ===================================================================
+  // HOOKS & EFFETS
+  // ===================================================================
+  
+  // Transition initiale (3 secondes d'écran de chargement)
   useEffect(() => {
     const timer = setTimeout(() => {
       setCurrentPage('login');
@@ -158,7 +168,7 @@ function AppContent() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Mettre à jour le titre de la page
+  // Mise à jour du titre de la page selon la page courante
   useEffect(() => {
     const titles: Record<PageId, string> = {
       'transition': 'Chargement...',
@@ -178,12 +188,56 @@ function AppContent() {
       'admin_users': 'Gestion des utilisateurs',
       'admin_departments': 'Gestion des départements',
       'admin_audit': 'Journal des activités',
-      'admin_settings': 'Paramètres administrateur'
+      'admin_settings': 'Paramètres administrateur',
+      'admin_rooms': 'Gestion des salles',           // Ajouté
+      'admin_notifications': 'Notifications Admin'
     };
 
     document.title = titles[currentPage] || 'Système de réservation - La Compassion';
   }, [currentPage]);
 
+  // ===================================================================
+  // FONCTIONS DE GESTION DES RÉSERVATIONS
+  // ===================================================================
+  
+  /**
+   * Fonction appelée lorsqu'on clique sur "Voir détails" d'une réservation
+   * @param reservation - Objet Reservation complet contenant toutes les données
+   */
+  const handleViewDetails = (reservation: Reservation) => {
+    console.log('Voir détails de la réservation:', reservation.id);
+    toast.info(`Affichage des détails de la réservation: ${reservation.title || reservation.id}`);
+    // TODO: Implémenter la navigation vers la page de détails de la réservation
+    // Exemple: setCurrentPage('reservation_details');
+  };
+
+  /**
+   * Fonction appelée lorsqu'on annule une réservation
+   * @param reservation - Objet Reservation complet
+   */
+  const handleCancelReservation = (reservation: Reservation) => {
+    console.log('Demande d\'annulation de la réservation:', reservation.id);
+    toast.warning(`Voulez-vous vraiment annuler la réservation "${reservation.title || reservation.id}" ?`);
+    // TODO: Implémenter la logique d'annulation avec confirmation
+    // Exemple: showConfirmationModal(() => api.cancelReservation(reservation.id));
+  };
+
+  /**
+   * Fonction appelée lorsqu'on édite une réservation
+   * @param reservation - Objet Reservation complet
+   */
+  const handleEditReservation = (reservation: Reservation) => {
+    console.log('Édition de la réservation:', reservation.id);
+    toast.info(`Édition de la réservation: ${reservation.title || reservation.id}`);
+    // TODO: Implémenter la navigation vers le formulaire d'édition
+    // Exemple: setCurrentPage('edit_reservation');
+    // setReservationToEdit(reservation);
+  };
+
+  // ===================================================================
+  // FONCTIONS D'AUTHENTIFICATION ET PROFIL
+  // ===================================================================
+  
   const handleRegister = (data: any) => {
     console.log("Données d'inscription reçues:", data);
     const newUser: User = {
@@ -264,7 +318,14 @@ function AppContent() {
     toast.info("Vous avez été déconnecté");
   };
 
-  // Fonction de navigation avec vérification des permissions
+  // ===================================================================
+  // FONCTION DE NAVIGATION PRINCIPALE
+  // ===================================================================
+  
+  /**
+   * Fonction de navigation entre les pages avec vérification des permissions
+   * @param page - Identifiant de la page vers laquelle naviguer
+   */
   const handleNavigate = (page: PageId) => {
     // Vérifier si c'est une page admin
     const isAdminPage = page.startsWith('admin_');
@@ -277,6 +338,10 @@ function AppContent() {
     setCurrentPage(page);
   };
 
+  // ===================================================================
+  // RENDU CONDITIONNEL DU CONTENU
+  // ===================================================================
+  
   const renderContent = () => {
     switch (currentPage) {
       case 'transition':
@@ -312,7 +377,10 @@ function AppContent() {
           </div>
         );
 
-      // Pages utilisateur
+      // ===============================================================
+      // PAGES UTILISATEUR
+      // ===============================================================
+      
       case 'dashboard':
         return (
           <DashboardLayout
@@ -358,8 +426,12 @@ function AppContent() {
             onLogout={handleLogout}
           >
             <ReservationList
-              userId={user?.id}
-              departmentId={user?.departmentId}
+              userId={user?.id || ''}
+              departmentId={user?.departmentId || ''}
+              onViewDetails={handleViewDetails}
+              onCancelReservation={handleCancelReservation}
+              onEditReservation={handleEditReservation}
+              userRole={user?.role}
             />
           </DashboardLayout>
         );
@@ -414,7 +486,10 @@ function AppContent() {
           </DashboardLayout>
         );
 
-      // Pages admin
+      // ===============================================================
+      // PAGES ADMINISTRATEUR
+      // ===============================================================
+      
       case 'admin_dashboard':
         return (
           <DashboardLayout
@@ -507,6 +582,10 @@ function AppContent() {
           </DashboardLayout>
         );
 
+      // ===============================================================
+      // PAGE 404 - NON TROUVÉE
+      // ===============================================================
+      
       default:
         return (
           <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#0F172A] to-[#1E293B]">
@@ -529,6 +608,7 @@ function AppContent() {
     <>
       {renderContent()}
       
+      {/* Composant Toaster pour les notifications */}
       <Toaster 
         position="top-right"
         toastOptions={{
@@ -539,6 +619,9 @@ function AppContent() {
   );
 }
 
+// =====================================================================
+// COMPOSANT RACINE DE L'APPLICATION
+// =====================================================================
 export default function App() {
   return (
     <ThemeProvider>

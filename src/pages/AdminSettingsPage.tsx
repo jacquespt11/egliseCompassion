@@ -22,13 +22,8 @@ import {
 } from 'lucide-react';
 import { useTheme } from '../contexts/ThemeContext';
 import { ConfirmationModal } from '../components/shared/ConfirmationModal';
+import { AdminSettingsPageProps } from '../types/component-props';
 
-interface AdminSettingsPageProps {
-  user: {
-    role: 'ADMIN' | 'RESPONSABLE' | 'USER';
-    email: string;
-  } | null;
-}
 
 interface SettingSection {
   id: string;

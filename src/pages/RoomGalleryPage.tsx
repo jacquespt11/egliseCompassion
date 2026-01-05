@@ -3,11 +3,11 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Search, Filter, Grid, List, Star, Users, Calendar, Building, Plus, ChevronRight } from 'lucide-react';
 import { useRooms } from '../hooks/useRooms';
-import type { Page } from '../types/common';
+import type { PageId } from '../types/common';
 
 interface RoomGalleryPageProps {
   user: any;
-  onNavigate: (page: Page) => void;
+  onNavigate: (page: PageId) => void;
 }
 
 export function RoomGalleryPage({ user, onNavigate }: RoomGalleryPageProps) {

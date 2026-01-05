@@ -1,6 +1,6 @@
 // src/types/routes.ts
 
-// Type pour les identifiants de page
+// Type unique pour tous les identifiants de page
 export type PageId = 
   | 'transition' 
   | 'login' 
@@ -19,7 +19,9 @@ export type PageId =
   | 'admin_users'
   | 'admin_departments' 
   | 'admin_audit' 
-  | 'admin_settings';
+  | 'admin_settings'
+  | 'admin_rooms'
+  | 'admin_notifications';
 
 // Interface pour les métadonnées de page
 export interface PageMetadata {

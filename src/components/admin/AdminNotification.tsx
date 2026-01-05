@@ -135,8 +135,9 @@ const AdminNotification: React.FC = () => {
             endTime: '16:00',
             purpose: 'Répétition',
             submittedAt: '2024-01-15T14:30:00Z',
-            status: 'pending', // CORRIGÉ: 'PENDING' -> 'pending'
-            type: 'RESERVATION' // Ajout de la propriété manquante
+            createdAt: '2024-01-10T08:30:00Z',
+            status: 'pending', 
+            type: 'RESERVATION'
           },
           {
             id: '2',
@@ -150,6 +151,7 @@ const AdminNotification: React.FC = () => {
             endTime: '12:00',
             purpose: 'Enregistrement podcast',
             submittedAt: '2024-01-15T09:15:00Z',
+            createdAt: '2024-01-10T08:30:00Z',
             status: 'pending', // CORRIGÉ: 'PENDING' -> 'pending'
             type: 'RESERVATION' // Ajout de la propriété manquante
           },
@@ -165,6 +167,7 @@ const AdminNotification: React.FC = () => {
             endTime: '17:00',
             purpose: 'Réunion des moniteurs',
             submittedAt: '2024-01-14T16:20:00Z',
+            createdAt: '2024-01-10T08:30:00Z',
             status: 'pending', // CORRIGÉ: 'PENDING' -> 'pending'
             type: 'RESERVATION' // Ajout de la propriété manquante
           }

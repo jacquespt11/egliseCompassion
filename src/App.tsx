@@ -68,8 +68,8 @@ function TransitionScreen() {
           transition={{ duration: 0.8, delay: 0.5 }}
           className="space-y-6"
         >
-          <h1 className="text-[100px] md:text-[120px] font-extrabold(800) bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-white to-purple-300 leading-tight tracking-tight">
-            CHURCHSPACE LC
+          <h1 className="text-[100px] md:text-[120px] font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-blue-800 to-blue-900 leading-tight tracking-tight">
+            MyCompassion Space
           </h1>
           
           <motion.p

@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+// src/contexts/ThemeContext.tsx
+import React, { createContext, useContext, useEffect, useState } from 'react';
 
 type Theme = 'light' | 'dark';
 
@@ -11,32 +12,32 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [theme, setTheme] = useState<Theme>(() => {
-    // Récupérer le thème sauvegardé ou utiliser 'light' par défaut
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('theme');
-      return (saved as Theme) || 'light';
+    // 1. Vérifier localStorage
+    const savedTheme = localStorage.getItem('theme') as Theme;
+    if (savedTheme && (savedTheme === 'light' || savedTheme === 'dark')) {
+      return savedTheme;
     }
+    
+    // 2. Vérifier la préférence système
+    if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+      return 'dark';
+    }
+    
+    // 3. Par défaut: light
     return 'light';
   });
 
   useEffect(() => {
     const root = document.documentElement;
     
-    // Appliquer le thème au document
+    // Retirer l'ancienne classe
     root.classList.remove('light', 'dark');
+    
+    // Ajouter la nouvelle classe
     root.classList.add(theme);
     
-    // Sauvegarder dans localStorage
+    // Sauvegarder
     localStorage.setItem('theme', theme);
-    
-    // Appliquer les couleurs de thème
-    if (theme === 'dark') {
-      root.style.setProperty('--background', '#0f172a');
-      root.style.setProperty('--foreground', '#ffffff');
-    } else {
-      root.style.setProperty('--background', '#ffffff');
-      root.style.setProperty('--foreground', '#0f172a');
-    }
   }, [theme]);
 
   const toggleTheme = () => {
@@ -53,7 +54,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 export const useTheme = () => {
   const context = useContext(ThemeContext);
   if (!context) {
-    throw new Error('useTheme must be used within a ThemeProvider');
+    throw new Error('useTheme must be used within ThemeProvider');
   }
   return context;
 };

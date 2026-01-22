@@ -1,82 +1,108 @@
+// src/hooks/useReservations.ts
 import { useState, useCallback } from 'react';
-import type { Reservation, CreateReservationDto } from '../types/reservation';
-import { useAuth } from './useAuth';
+import { toast } from 'sonner';
+import { Reservation } from '../types/reservation';
 
-export function useReservations() {
-  const { user } = useAuth();
+interface UseReservationsProps {
+  userId?: string;
+  departmentId?: string;
+  userRole?: string;
+}
+
+export const useReservations = ({ userId, departmentId, userRole }: UseReservationsProps) => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchReservations = useCallback(async (userId?: string, departmentId?: string) => {
+  // Charger les réservations
+  const loadReservations = useCallback(async () => {
     setLoading(true);
     setError(null);
     
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      // TODO: Remplacer par appel API
+      const mockReservations: Reservation[] = [
+        {
+          id: '1',
+          userId: userId || 'user1',
+          departmentId: departmentId || 'dept1',
+          roomId: 'room1',
+          title: 'Réunion d\'équipe',
+          description: 'Réunion hebdomadaire de l\'équipe',
+          startTime: new Date().toISOString(),
+          endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
+          attendees: 10,
+          approvalstatus: 'APPROVED',
+          createdAt: new Date().toISOString(),
+          updatedAt: new Date().toISOString(),
+        }
+      ];
       
-      // ... code pour récupérer les réservations
-      
-      setReservations(reservations);
-      return reservations;
+      setReservations(mockReservations);
     } catch (err) {
-      setError('Erreur lors de la récupération des réservations');
+      setError('Erreur lors du chargement des réservations');
+      toast.error('Impossible de charger les réservations');
+    } finally {
+      setLoading(false);
+    }
+  }, [userId, departmentId]);
+
+  // Créer une réservation
+  const createReservation = useCallback(async (data: Omit<Reservation, 'id' | 'createdAt' | 'updatedAt'>) => {
+    setLoading(true);
+    try {
+      // TODO: Remplacer par appel API
+      const newReservation: Reservation = {
+        ...data,
+        id: Date.now().toString(),
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      
+      setReservations(prev => [...prev, newReservation]);
+      toast.success('Réservation créée avec succès');
+      return newReservation;
+    } catch (err) {
+      toast.error('Erreur lors de la création de la réservation');
       throw err;
     } finally {
       setLoading(false);
     }
   }, []);
 
-  
-  const createReservation = useCallback(async (data: CreateReservationDto) => {
-    setLoading(true);
-    setError(null);
-    
+  // Annuler une réservation
+  const cancelReservation = useCallback(async (reservationId: string) => {
     try {
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Crée les dates ISO complètes
-      const startDate = new Date(`${data.date}T${data.startTime}:00`).toISOString();
-      const endDate = new Date(`${data.date}T${data.endTime}:00`).toISOString();
-      
-      const newReservation: Reservation = {
-        id: Math.random().toString(36).substr(2, 9),
-        roomId: data.roomId,
-        roomName: '', 
-        userId: user?.id || 'current-user-id',
-        userName: `${user?.firstName || ''} ${user?.lastName || ''}`.trim() || 'Utilisateur',
-        userEmail: user?.email || '',
-        departmentId: data.departmentId || user?.departmentId || '',
-        departmentName: user?.department || '',
-        title: data.title,
-        description: data.description || '',
-        date: data.date,
-        startTime: data.startTime,
-        endTime: data.endTime,
-        startDate: startDate,
-        endDate: endDate,
-        status: 'EN_ATTENTE',
-        participants: data.participants || 1,
-        equipmentRequested: data.equipmentRequested || [],
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      
-      setReservations(prev => [newReservation, ...prev]);
-      return newReservation;
+      // TODO: Remplacer par appel API
+      setReservations(prev => prev.filter(r => r.id !== reservationId));
+      toast.success('Réservation annulée');
     } catch (err) {
-      setError('Erreur lors de la création de la réservation');
+      toast.error('Erreur lors de l\'annulation');
       throw err;
-    } finally {
-      setLoading(false);
     }
-  }, [user]);
-    return {
+  }, []);
+
+  // Mettre à jour une réservation
+  const updateReservation = useCallback(async (reservationId: string, data: Partial<Reservation>) => {
+    try {
+      // TODO: Remplacer par appel API
+      setReservations(prev => prev.map(r => 
+        r.id === reservationId ? { ...r, ...data, updatedAt: new Date().toISOString() } : r
+      ));
+      toast.success('Réservation mise à jour');
+    } catch (err) {
+      toast.error('Erreur lors de la mise à jour');
+      throw err;
+    }
+  }, []);
+
+  return {
     reservations,
     loading,
     error,
+    loadReservations,
     createReservation,
-    fetchReservations,
+    cancelReservation,
+    updateReservation,
   };
-  
-}
+};

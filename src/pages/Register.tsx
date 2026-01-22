@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react';
 import { motion } from 'framer-motion';
 import { Building2, Mail, Lock, User, ArrowLeft, Church } from 'lucide-react';
 import { toast } from 'sonner';
-import { DepartmentSelector } from './auth/DepartmentSelector';
+import { DepartmentSelector } from '../components/auth/DepartmentSelector';
 
 interface RegisterProps {
   onRegister: (formData: any) => void;

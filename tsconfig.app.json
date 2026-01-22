@@ -11,17 +11,17 @@
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
-    "verbatimModuleSyntax": false,  // Changez de true à false
+    "verbatimModuleSyntax": false, 
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
 
     /* Linting - Désactivez les vérifications strictes */
-    "strict": false,  // Changez de true à false
-    "noUnusedLocals": false,  // Changez de true à false
-    "noUnusedParameters": false,  // Changez de true à false
+    "strict": false,  
+    "noUnusedLocals": false,  
+    "noUnusedParameters": false,  
     "erasableSyntaxOnly": true,
-    "noFallthroughCasesInSwitch": false,  // Changez de true à false
+    "noFallthroughCasesInSwitch": false,  
     "noUncheckedSideEffectImports": true
   },
   "include": ["src"]

@@ -74,7 +74,7 @@ function TransitionScreen() {
 
         {/* Titres et Textes avec typographie améliorée */}
         <motion.div variants={{ hidden: { opacity: 0, y: 20 }, visible: { opacity: 1, y: 0 } }} className="space-y-6">
-          <h1 className="text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 leading-tight tracking-tight drop-shadow-lg">
+          <h1 className="text-4xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-white to-blue-400 leading-tight tracking-tight drop-shadow-lg">
             MyCompassion Space
           </h1>
 

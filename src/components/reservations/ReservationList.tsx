@@ -37,13 +37,13 @@ export function ReservationList({
     // Filtre par recherche
     if (searchTerm) {
       const searchLower = searchTerm.toLowerCase();
-      const matchesSearch = 
+      const matchesSearch =
         (reservation.title || '').toLowerCase().includes(searchLower) ||
         (reservation.description || '').toLowerCase().includes(searchLower) ||
         reservation.roomName.toLowerCase().includes(searchLower) ||
         (reservation.userName || '').toLowerCase().includes(searchLower) ||
         reservation.departmentId.toLowerCase().includes(searchLower);
-      
+
       if (!matchesSearch) return false;
     }
 
@@ -56,16 +56,16 @@ export function ReservationList({
     if (dateFilter !== 'all') {
       const today = new Date();
       const reservationDate = new Date(reservation.startTime);
-      
-      switch(dateFilter) {
+
+      switch (dateFilter) {
         case 'today':
           return reservationDate.toDateString() === today.toDateString();
         case 'this_week':
           const startOfWeek = new Date(today.setDate(today.getDate() - today.getDay()));
           return reservationDate >= startOfWeek;
         case 'this_month':
-          return reservationDate.getMonth() === today.getMonth() && 
-                 reservationDate.getFullYear() === today.getFullYear();
+          return reservationDate.getMonth() === today.getMonth() &&
+            reservationDate.getFullYear() === today.getFullYear();
         case 'upcoming':
           return reservationDate >= today;
         case 'past':
@@ -109,17 +109,17 @@ export function ReservationList({
                 Consultez et gérez toutes vos réservations de salles
               </p>
             </div>
-            
+
             <div className="flex flex-wrap gap-3">
-              <button 
+              <button
                 onClick={() => fetchReservations(userId, departmentId)}
                 className="px-5 py-3 bg-white/20 text-white rounded-xl font-medium hover:bg-white/30 transition-all border border-white/30 shadow-lg flex items-center gap-2 hover:shadow-white/20"
               >
                 <RefreshCw className="w-5 h-5" />
                 Actualiser
               </button>
-              <button 
-                onClick={() => {/* Exporter */}}
+              <button
+                onClick={() => {/* Exporter */ }}
                 className="px-5 py-3 bg-white text-amber-700 rounded-xl font-semibold hover:bg-amber-50 transition-all flex items-center gap-2 shadow-lg hover:shadow-xl shadow-amber-900/30"
               >
                 <Download className="w-5 h-5" />
@@ -129,7 +129,7 @@ export function ReservationList({
           </div>
 
           {/* Statistiques rapides */}
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
             <div className="p-4 bg-white/20 rounded-2xl border border-white/30">
               <div className="flex items-center gap-3">
                 <div className="p-2 rounded-lg bg-white/20">
@@ -148,7 +148,7 @@ export function ReservationList({
                   <Clock className="w-5 h-5 text-amber-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-white/90">En attente</p>
+                  <p className="text-sm text-white/90">Attente</p>
                   <p className="font-semibold text-white text-lg">
                     {reservations.filter(r => r.status === 'EN_ATTENTE').length}
                   </p>
@@ -162,7 +162,7 @@ export function ReservationList({
                   <Calendar className="w-5 h-5 text-emerald-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-white/90">Approuvées</p>
+                  <p className="text-sm text-white/90">Validées</p>
                   <p className="font-semibold text-white text-lg">
                     {reservations.filter(r => r.status === 'APPROUVEE').length}
                   </p>
@@ -176,7 +176,7 @@ export function ReservationList({
                   <Calendar className="w-5 h-5 text-rose-300" />
                 </div>
                 <div>
-                  <p className="text-sm text-white/90">Refusées</p>
+                  <p className="text-sm text-white/90">Refus</p>
                   <p className="font-semibold text-white text-lg">
                     {reservations.filter(r => r.status === 'REFUSEE').length}
                   </p>
@@ -184,8 +184,8 @@ export function ReservationList({
               </div>
             </div>
 
-            <div className="p-4 bg-white/20 rounded-2xl border border-white/30">
-              <div className="flex items-center gap-3">
+            <div className="p-4 bg-white/20 rounded-2xl border border-white/30 col-span-2 md:col-span-1">
+              <div className="flex items-center gap-3 justify-center md:justify-start">
                 <div className="p-2 rounded-lg bg-gray-500/30">
                   <Calendar className="w-5 h-5 text-gray-300" />
                 </div>
@@ -202,7 +202,7 @@ export function ReservationList({
 
         {/* Barre de recherche et filtres */}
         <div className="mb-8 p-5 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
-          <div className="flex flex-col md:flex-row gap-4">
+          <div className="flex flex-col lg:flex-row gap-4">
             {/* Barre de recherche */}
             <div className="flex-1 relative">
               <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
@@ -216,14 +216,14 @@ export function ReservationList({
             </div>
 
             {/* Filtres */}
-            <div className="flex gap-3">
+            <div className="flex flex-col sm:flex-row gap-3">
               {/* Filtre par date */}
-              <div className="flex items-center gap-2">
-                <Calendar className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+              <div className="flex items-center gap-2 w-full sm:w-auto">
+                <Calendar className="w-5 h-5 text-amber-600 dark:text-amber-400 hidden sm:block" />
                 <select
                   value={dateFilter}
                   onChange={(e) => setDateFilter(e.target.value)}
-                  className="px-4 py-2.5 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:focus:ring-amber-800"
+                  className="w-full sm:w-auto px-4 py-3 bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-300 rounded-xl border-2 border-gray-200 dark:border-gray-600 shadow-sm focus:border-amber-500 focus:ring-2 focus:ring-amber-200 dark:focus:ring-amber-800"
                 >
                   <option value="all">Toutes dates</option>
                   <option value="today">Aujourd'hui</option>
@@ -235,22 +235,21 @@ export function ReservationList({
               </div>
 
               {/* Filtre par statut */}
-              <div className="flex bg-gray-100 dark:bg-gray-700 rounded-xl p-1 border-2 border-gray-200 dark:border-gray-600">
+              <div className="flex overflow-x-auto pb-2 sm:pb-0 bg-gray-100 dark:bg-gray-700 rounded-xl p-1 border-2 border-gray-200 dark:border-gray-600 scrollbar-hide">
                 {[
                   { id: 'all', label: 'Tous', color: 'bg-gray-500' },
-                  { id: 'EN_ATTENTE', label: 'En attente', color: 'bg-amber-500' },
-                  { id: 'APPROUVEE', label: 'Approuvées', color: 'bg-emerald-500' },
-                  { id: 'REFUSEE', label: 'Refusées', color: 'bg-rose-500' },
+                  { id: 'EN_ATTENTE', label: 'Attente', color: 'bg-amber-500' },
+                  { id: 'APPROUVEE', label: 'Validées', color: 'bg-emerald-500' },
+                  { id: 'REFUSEE', label: 'Refus', color: 'bg-rose-500' },
                   { id: 'ANNULEE', label: 'Annulées', color: 'bg-gray-500' },
                 ].map(filter => (
                   <button
                     key={filter.id}
                     onClick={() => setStatusFilter(filter.id)}
-                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                      statusFilter === filter.id
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all whitespace-nowrap ${statusFilter === filter.id
                         ? 'bg-white dark:bg-gray-600 text-gray-800 dark:text-gray-300 shadow-sm'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-300'
-                    }`}
+                      }`}
                   >
                     <div className="flex items-center gap-2">
                       <div className={`w-2 h-2 rounded-full ${filter.color}`} />
@@ -287,7 +286,7 @@ export function ReservationList({
 
         {/* Liste des réservations */}
         {filteredReservations.length > 0 ? (
-          <motion.div 
+          <motion.div
             layout
             className="space-y-4 mb-12"
           >

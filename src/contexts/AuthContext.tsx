@@ -30,7 +30,8 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(() => {
     const savedUser = localStorage.getItem('user');
-    return savedUser ? JSON.parse(savedUser) : null;
+    const token = localStorage.getItem('symfony_access_token');
+    return (savedUser && token) ? JSON.parse(savedUser) : null;
   });
 
   const login = useCallback(async (email: string, password: string) => {

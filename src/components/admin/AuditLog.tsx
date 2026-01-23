@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
-import { 
-  Search, 
-  Filter, 
-  Download, 
-  Eye, 
-  Edit, 
-  CheckCircle, 
+import {
+  Search,
+  Filter,
+  Download,
+  Eye,
+  Edit,
+  CheckCircle,
   XCircle,
   Calendar,
   Clock,
   User
 } from 'lucide-react';
-import { useReservations } from '../../hooks/useReservations';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
@@ -240,7 +239,7 @@ const AuditLog: React.FC = () => {
             <h2 className="text-2xl font-bold text-gray-800">Journal d'activités</h2>
             <p className="text-gray-600">Suivi complet des actions système</p>
           </div>
-          
+
           <button
             onClick={handleExport}
             className="flex items-center gap-2 px-4 py-2 bg-white border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
@@ -268,7 +267,7 @@ const AuditLog: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Action</label>
               <select
                 value={filters.action}
-                onChange={(e) => setFilters({...filters, action: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, action: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
                 <option value="">Toutes les actions</option>
@@ -284,7 +283,7 @@ const AuditLog: React.FC = () => {
               <label className="block text-sm font-medium text-gray-700 mb-1">Entité</label>
               <select
                 value={filters.entity}
-                onChange={(e) => setFilters({...filters, entity: e.target.value})}
+                onChange={(e) => setFilters({ ...filters, entity: e.target.value })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               >
                 <option value="">Toutes les entités</option>
@@ -301,8 +300,8 @@ const AuditLog: React.FC = () => {
                 type="date"
                 value={filters.dateRange.start}
                 onChange={(e) => setFilters({
-                  ...filters, 
-                  dateRange: {...filters.dateRange, start: e.target.value}
+                  ...filters,
+                  dateRange: { ...filters.dateRange, start: e.target.value }
                 })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               />
@@ -314,8 +313,8 @@ const AuditLog: React.FC = () => {
                 type="date"
                 value={filters.dateRange.end}
                 onChange={(e) => setFilters({
-                  ...filters, 
-                  dateRange: {...filters.dateRange, end: e.target.value}
+                  ...filters,
+                  dateRange: { ...filters.dateRange, end: e.target.value }
                 })}
                 className="w-full p-2 border border-gray-300 rounded-lg"
               />

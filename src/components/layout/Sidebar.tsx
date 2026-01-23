@@ -90,9 +90,9 @@ const NavItem: React.FC<{
         transition-all duration-200 ease-in-out relative overflow-hidden
         ${isActive
           ? 'bg-gradient-to-r from-blue-500/10 to-blue-600/10 dark:from-blue-500/20 dark:to-blue-600/20 ' +
-            'text-blue-600 dark:text-blue-300 font-semibold ring-1 ring-blue-500/20'
+          'text-blue-600 dark:text-blue-300 font-semibold ring-1 ring-blue-500/20'
           : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-gray-700/50 ' +
-            'hover:text-gray-900 dark:hover:text-white'
+          'hover:text-gray-900 dark:hover:text-white'
         }
       `}
       whileHover={{ scale: 1.02 }}
@@ -155,8 +155,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   // Fermer la sidebar en cliquant à l'extérieur (mobile seulement)
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (isMobile && isOpen && sidebarRef.current && 
-          !sidebarRef.current.contains(event.target as Node)) {
+      if (isMobile && isOpen && sidebarRef.current &&
+        !sidebarRef.current.contains(event.target as Node)) {
         onClose();
       }
     };
@@ -221,15 +221,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
             exit="closed"
             variants={sidebarVariants}
             className={`
-              fixed lg:sticky top-0 left-0 h-screen w-72 z-40 overflow-hidden
+              fixed lg:sticky top-0 left-0 h-screen w-72 z-40 flex flex-col
               bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700
               shadow-xl lg:shadow-sm
               ${isMobile ? '' : 'lg:translate-x-0'}
             `}
-            transition={{ 
-              type: "spring", 
-              stiffness: 300, 
-              damping: 30 
+            transition={{
+              type: "spring",
+              stiffness: 300,
+              damping: 30
             }}
           >
             {/* En-tête de la sidebar */}
@@ -247,7 +247,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                   </p>
                 </div>
               </div>
-              
+
               {/* Info utilisateur */}
               <div className="mt-4 flex items-center gap-3 p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center font-bold text-white">
@@ -264,9 +264,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               </div>
             </div>
 
-            {/* Navigation */}
-            <div className="p-4 overflow-y-auto h-[calc(100vh-200px)]">
-              <nav className="space-y-2">
+            <div className="flex-1 overflow-y-auto py-4">
+              <nav className="space-y-2 px-4">
                 <motion.div
                   initial={{ opacity: 0, y: -10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -334,7 +333,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
 
             {/* Pied de sidebar */}
-            <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800">
+            {/* Pied de sidebar */}
+            <div className="p-4 border-t border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 flex-shrink-0">
               {/* Bouton de thème dans la sidebar */}
               <div className="mb-4">
                 <div className="flex items-center justify-between p-3 rounded-lg bg-gray-50 dark:bg-gray-700/50">

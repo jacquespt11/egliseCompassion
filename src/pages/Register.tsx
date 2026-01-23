@@ -24,7 +24,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
+
     // Validation
     if (formData.password !== formData.confirmPassword) {
       toast.error("Les mots de passe ne correspondent pas.");
@@ -52,7 +52,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
   };
 
   const handleDepartmentSelect = (departmentId: string) => {
-    setFormData({...formData, departmentId});
+    setFormData({ ...formData, departmentId });
   };
 
   return (
@@ -64,18 +64,18 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
         className="w-full max-w-4xl"
       >
         {/* Header avec retour */}
-        <div className="flex items-center justify-between mb-8">
-          <button 
+        <div className="flex flex-col md:flex-row items-center justify-between mb-6 md:mb-8 gap-4 md:gap-0">
+          <button
             onClick={onBackToLogin}
-            className="flex items-center gap-3 text-white/70 hover:text-white transition-all duration-300 group px-4 py-2 rounded-lg hover:bg-white/5 relative overflow-hidden"
+            className="w-full md:w-auto flex items-center justify-center md:justify-start gap-3 text-white/70 hover:text-white transition-all duration-300 group px-4 py-2 rounded-lg hover:bg-white/5 relative overflow-hidden"
           >
             {/* Animation de fond au survol */}
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500"></span>
-            
+
             <ArrowLeft className="w-5 h-5 transition-transform group-hover:-translate-x-1 relative z-10" />
             <span className="font-medium relative z-10">Retour à la connexion</span>
           </button>
-          
+
           {/* Logo */}
           <div className="flex items-center gap-3">
             <Church className="w-8 h-8 text-blue-400" />
@@ -84,29 +84,29 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
               <p className="text-xs text-white/50">Centre Évangélique</p>
             </div>
           </div>
-          
-          <div className="w-32"></div>
+
+          <div className="hidden md:block w-32"></div>
         </div>
 
         {/* Carte principale */}
         <div className="bg-gradient-to-br from-white/5 to-white/[0.02] backdrop-blur-xl rounded-3xl border border-white/10 shadow-2xl overflow-hidden">
           {/* Header de la carte */}
-          <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 p-8 border-b border-white/10">
-            <div className="flex items-center justify-center gap-4 mb-4">
+          <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-blue-500/10 p-6 md:p-8 border-b border-white/10">
+            <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-4">
               <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500/20 to-purple-500/20">
                 <Building2 className="w-12 h-12 text-white" />
               </div>
-              <div className="text-center">
-                <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-white to-purple-300">
+              <div className="text-center md:text-left">
+                <h2 className="text-2xl md:text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-300 via-white to-purple-300">
                   Inscription Responsable
                 </h2>
-                <p className="text-white/60 mt-2">Créez votre compte pour gérer votre département</p>
+                <p className="text-white/60 mt-2 text-sm md:text-base">Créez votre compte pour gérer votre département</p>
               </div>
             </div>
           </div>
 
           {/* Formulaire */}
-          <div className="p-8 md:p-12">
+          <div className="p-4 md:p-8 lg:p-12">
             <form onSubmit={handleSubmit} className="space-y-8">
               {/* Section Informations personnelles */}
               <div className="space-y-4">
@@ -116,7 +116,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   </div>
                   <h3 className="text-xl font-semibold text-white">Informations personnelles</h3>
                 </div>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
@@ -129,13 +129,13 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                         type="text"
                         required
                         value={formData.firstName}
-                        onChange={(e) => setFormData({...formData, firstName: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none transition-all hover:border-white/20"
                         placeholder="Ex: Perfect"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
                       <span>Nom</span>
@@ -147,7 +147,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                         type="text"
                         required
                         value={formData.lastName}
-                        onChange={(e) => setFormData({...formData, lastName: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-blue-400/50 focus:border-blue-400/30 outline-none transition-all hover:border-white/20"
                         placeholder="Ex: Tshibangu"
                       />
@@ -164,15 +164,15 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   </div>
                   <h3 className="text-xl font-semibold text-white">Département</h3>
                 </div>
-                
-                <DepartmentSelector 
+
+                <DepartmentSelector
                   value={formData.departmentId}
                   onSelect={handleDepartmentSelect}
                   label="Sélectionnez votre département"
                   required={true}
                   showIcon={true}
                 />
-                
+
                 <p className="text-sm text-white/50">
                   Le département sélectionné déterminera les salles que vous pourrez réserver.
                 </p>
@@ -186,7 +186,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   </div>
                   <h3 className="text-xl font-semibold text-white">Contact</h3>
                 </div>
-                
+
                 <div className="space-y-3">
                   <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
                     <span>Email professionnel</span>
@@ -198,7 +198,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                       type="email"
                       required
                       value={formData.email}
-                      onChange={(e) => setFormData({...formData, email: e.target.value})}
+                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                       className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-cyan-400/50 focus:border-cyan-400/30 outline-none transition-all hover:border-white/20"
                       placeholder="votre.nom@gmail.com"
                     />
@@ -214,7 +214,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   </div>
                   <h3 className="text-xl font-semibold text-white">Sécurité</h3>
                 </div>
-                
+
                 <div className="grid md:grid-cols-2 gap-6">
                   <div className="space-y-3">
                     <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
@@ -227,13 +227,13 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                         type="password"
                         required
                         value={formData.password}
-                        onChange={(e) => setFormData({...formData, password: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-green-400/50 focus:border-green-400/30 outline-none transition-all hover:border-white/20"
                         placeholder="Minimum 8 caractères"
                       />
                     </div>
                   </div>
-                  
+
                   <div className="space-y-3">
                     <label className="text-sm font-medium text-white/80 ml-1 flex items-center gap-2">
                       <span>Confirmation</span>
@@ -245,14 +245,14 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                         type="password"
                         required
                         value={formData.confirmPassword}
-                        onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
+                        onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-12 py-4 text-white focus:ring-2 focus:ring-green-400/50 focus:border-green-400/30 outline-none transition-all hover:border-white/20"
                         placeholder="Retapez votre mot de passe"
                       />
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="bg-blue-500/10 border border-blue-500/20 rounded-xl p-4 mt-4">
                   <p className="text-sm text-white/70">
                     <strong>Recommandations de sécurité :</strong> Utilisez un mot de passe fort contenant au moins 8 caractères, avec des majuscules, des minuscules, des chiffres et des caractères spéciaux.
@@ -268,7 +268,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
               >
                 {/* Animation d'ondulation au survol */}
                 <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000"></span>
-                
+
                 <span className="flex items-center justify-center gap-3 relative z-10">
                   {isSubmitting ? (
                     <>
@@ -295,7 +295,7 @@ export function Register({ onRegister, onBackToLogin }: RegisterProps) {
                   Votre compte sera créé en tant que "Responsable de département". Un administrateur devra valider votre compte avant que vous puissiez effectuer des réservations. Vous recevrez une notification par email une fois votre compte validé.
                 </p>
               </div>
-              
+
               <div className="flex items-start gap-3 text-sm text-white/50 mt-4">
                 <div className="p-1 rounded bg-white/5 mt-0.5">
                   <Building2 className="w-4 h-4" />

@@ -35,6 +35,14 @@ export async function createReservation(reservation: CreateReservationDto): Prom
 }
 
 /**
+ * Mettre à jour les détails d'une réservation
+ */
+export async function updateReservation(id: number, data: Partial<CreateReservationDto>): Promise<Reservation> {
+    const apiReservation = await apiClient.patch<ApiReservation>(`/reservations/${id}`, data);
+    return transformApiReservationToReservation(apiReservation);
+}
+
+/**
  * Mettre à jour le statut d'une réservation
  */
 export async function updateReservationStatus(

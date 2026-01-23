@@ -1,7 +1,8 @@
 // src/hooks/useReservations.ts
 import { useState, useCallback } from 'react';
 import { toast } from 'sonner';
-import { Reservation } from '../types/reservation';
+import { Reservation, CreateReservationDto } from '../types/reservation';
+import * as reservationService from '../services/api/symfony-reservation.service';
 
 interface UseReservationsProps {
   userId?: string;
@@ -9,61 +10,59 @@ interface UseReservationsProps {
   userRole?: string;
 }
 
-export const useReservations = ({ userId, departmentId, userRole }: UseReservationsProps) => {
+export const useReservations = ({ userId, departmentId }: UseReservationsProps = {}) => {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Charger les réservations
-  const loadReservations = useCallback(async () => {
+  const fetchReservations = useCallback(async (currentUserId?: string, currentDeptId?: string) => {
     setLoading(true);
     setError(null);
-    
+
     try {
-      // TODO: Remplacer par appel API
-      const mockReservations: Reservation[] = [
-        {
-          id: '1',
-          userId: userId || 'user1',
-          departmentId: departmentId || 'dept1',
-          roomId: 'room1',
-          title: 'Réunion d\'équipe',
-          description: 'Réunion hebdomadaire de l\'équipe',
-          startTime: new Date().toISOString(),
-          endTime: new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString(),
-          attendees: 10,
-          approvalstatus: 'APPROVED',
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
+      // Préparer les filtres
+      const filters: any = {};
+
+      // Utiliser les IDs passés en arg ou ceux du hook
+      const uId = currentUserId || userId;
+      const dId = currentDeptId || departmentId;
+
+      // Si on filtre par user
+      if (uId) {
+        // Si l'ID est numérique (cas probable avec Symfony)
+        const numId = parseInt(uId, 10);
+        if (!isNaN(numId)) {
+          filters.userId = numId;
         }
-      ];
-      
-      setReservations(mockReservations);
+      }
+
+      // TODO: Gérer le filtrage par département côté API si nécessaire
+      // if (dId) filters.departmentId = dId;
+
+      const data = await reservationService.getAllReservations(filters);
+      setReservations(data);
+      return data;
     } catch (err) {
-      setError('Erreur lors du chargement des réservations');
+      const errorMessage = 'Erreur lors du chargement des réservations';
+      setError(errorMessage);
       toast.error('Impossible de charger les réservations');
+      console.error(err);
     } finally {
       setLoading(false);
     }
   }, [userId, departmentId]);
 
   // Créer une réservation
-  const createReservation = useCallback(async (data: Omit<Reservation, 'id' | 'createdAt' | 'updatedAt'>) => {
+  const createReservation = useCallback(async (data: CreateReservationDto) => {
     setLoading(true);
     try {
-      // TODO: Remplacer par appel API
-      const newReservation: Reservation = {
-        ...data,
-        id: Date.now().toString(),
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
-      
+      const newReservation = await reservationService.createReservation(data);
       setReservations(prev => [...prev, newReservation]);
       toast.success('Réservation créée avec succès');
       return newReservation;
-    } catch (err) {
-      toast.error('Erreur lors de la création de la réservation');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Erreur lors de la création de la réservation');
       throw err;
     } finally {
       setLoading(false);
@@ -73,8 +72,14 @@ export const useReservations = ({ userId, departmentId, userRole }: UseReservati
   // Annuler une réservation
   const cancelReservation = useCallback(async (reservationId: string) => {
     try {
-      // TODO: Remplacer par appel API
-      setReservations(prev => prev.filter(r => r.id !== reservationId));
+      const numId = parseInt(reservationId, 10);
+      if (isNaN(numId)) throw new Error('ID de réservation invalide');
+
+      await reservationService.updateReservationStatus(numId, 'cancelled');
+
+      setReservations(prev => prev.map(r =>
+        r.id === reservationId ? { ...r, status: 'ANNULEE' } : r
+      ));
       toast.success('Réservation annulée');
     } catch (err) {
       toast.error('Erreur lors de l\'annulation');
@@ -85,12 +90,19 @@ export const useReservations = ({ userId, departmentId, userRole }: UseReservati
   // Mettre à jour une réservation
   const updateReservation = useCallback(async (reservationId: string, data: Partial<Reservation>) => {
     try {
-      // TODO: Remplacer par appel API
-      setReservations(prev => prev.map(r => 
-        r.id === reservationId ? { ...r, ...data, updatedAt: new Date().toISOString() } : r
+      const numId = parseInt(reservationId, 10);
+      if (isNaN(numId)) throw new Error('ID de réservation invalide');
+
+      // Note: On utilise le service d'update ajouté précédemment
+      const updated = await reservationService.updateReservation(numId, data);
+
+      setReservations(prev => prev.map(r =>
+        r.id === reservationId ? updated : r
       ));
       toast.success('Réservation mise à jour');
     } catch (err) {
+      // Fallback si l'update n'est pas supporté ou échoue
+      console.error(err);
       toast.error('Erreur lors de la mise à jour');
       throw err;
     }
@@ -100,7 +112,7 @@ export const useReservations = ({ userId, departmentId, userRole }: UseReservati
     reservations,
     loading,
     error,
-    loadReservations,
+    fetchReservations, // Renommé de loadReservations pour consistance
     createReservation,
     cancelReservation,
     updateReservation,
